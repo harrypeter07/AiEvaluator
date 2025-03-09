@@ -3,10 +3,7 @@
 export default function Home() {
   return (
     <div className="h-full w-full">
-      <h2>sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie  </h2>
-      <h2>sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie  </h2>
-      <h2>sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie  </h2>
-      <h2>sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie ,sorry cupie  </h2>
+<h1>DONE </h1>
 
         <div className="flex flex-col items-center justify-center min-h-screen">
             <h1 className="text-3xl font-bold mb-4">Welcome to the Assignment Checker</h1>

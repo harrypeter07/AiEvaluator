@@ -13,9 +13,10 @@ export default function Dashboard() {
         if (session) {
             fetchAssignments();
         }
-    }, [session]);
+    }, [session, assignmentCount]); // ✅ Ensure UI updates after change
 
     const fetchAssignments = async () => {
+        if (!session) return; // ✅ Ensure session is ready
         try {
             const response = await fetch("/api/assignments/count");
             const data = await response.json();
@@ -55,7 +56,15 @@ export default function Dashboard() {
 
             if (response.ok) {
                 setResult(data.feedback);
-                fetchAssignments(); // Update count after upload
+
+                // ✅ Ensure assignment updates before fetching count
+                await fetch("/api/assignments/updateCount", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ assignmentName: file.name })
+                });
+
+                await fetchAssignments(); // ✅ Ensure UI updates after change
             } else {
                 alert("Error: " + data.error);
             }
@@ -74,21 +83,39 @@ export default function Dashboard() {
             <h1 className="text-2xl font-bold mb-4">Assignment Checker Dashboard</h1>
 
             {!session ? (
-                <button onClick={() => signIn()} className="bg-blue-500 text-white px-4 py-2 rounded">
+                <button
+                    onClick={() => signIn()}
+                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                >
                     Sign In
                 </button>
             ) : (
                 <>
                     <div className="mb-4">
-                        <p>Welcome, <strong>{session.user.email}</strong></p>
-                        <p>Total Assignments: <strong>{assignmentCount}</strong></p>
-                        <button onClick={() => signOut()} className="bg-red-500 text-white px-4 py-2 rounded mt-2">
+                        <p>
+                            Welcome, <strong>{session.user.email}</strong>
+                        </p>
+                        <p>
+                            Total Assignments: <strong>{assignmentCount}</strong>
+                        </p>
+                        <button
+                            onClick={() => signOut()}
+                            className="bg-red-500 text-white px-4 py-2 rounded mt-2"
+                        >
                             Sign Out
                         </button>
                     </div>
 
-                    <input type="file" accept="application/pdf" onChange={handleFileChange} className="mb-4" />
-                    <button onClick={handleUpload} className="bg-blue-500 text-white px-4 py-2 rounded">
+                    <input
+                        type="file"
+                        accept="application/pdf"
+                        onChange={handleFileChange}
+                        className="mb-4"
+                    />
+                    <button
+                        onClick={handleUpload}
+                        className="bg-blue-500 text-white px-4 py-2 rounded"
+                    >
                         {loading ? "Analyzing..." : "Upload & Analyze"}
                     </button>
 

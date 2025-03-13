@@ -1,9 +1,8 @@
 // app/api/register/route.js
-// import connectToDatabase from '../../../db'; // Adjust path based on db.js 
+import connectToDatabase from '../../../db'; // Adjust path based on db.js 
 // 
 // location
 
-import connectToDatabase from '../../../lib/db';
 import { NextResponse } from 'next/server';
 
 export async function POST(request) {

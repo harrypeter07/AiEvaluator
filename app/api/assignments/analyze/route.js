@@ -1,5 +1,5 @@
-import { analyzePDF } from "@/lib/gemini";
-// import fs from "fs";
+import { analyzePDF } from "@/lib/plag";
+import { analyzeLargePDF } from "@/lib/largePDF";
 
 export async function POST(req) {
 	try {
@@ -7,10 +7,22 @@ export async function POST(req) {
 		const file = formData.get("pdf");
 
 		if (!file) {
-			return Response.json({ error: "No file ed" }, { status: 400 });
+			return Response.json({ error: "No file provided" }, { status: 400 });
 		}
 
-		// Convert PDF to base64
+		// Check file size (20MB = 20 * 1024 * 1024 bytes)
+		const FILE_SIZE_LIMIT = 20 * 1024 * 1024;
+		if (file.size > FILE_SIZE_LIMIT) {
+			// Use File Manager for large files
+			const result = await analyzeLargePDF(file);
+			console.log("Analysis result:", result);
+			return Response.json({
+				feedback: result.text,
+				fileMetadata: result.fileInfo,
+			});
+		}
+
+		// Convert PDF to base64 for smaller files
 		const bytes = await file.arrayBuffer();
 		const base64Data = Buffer.from(bytes).toString("base64");
 

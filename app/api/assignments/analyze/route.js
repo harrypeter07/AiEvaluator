@@ -1,4 +1,4 @@
-import { analyzePDF } from "@/lib/plag";
+import { analyzePDF } from "@/lib/gemini";
 import { analyzeLargePDF } from "@/lib/largePDF";
 
 export async function POST(req) {

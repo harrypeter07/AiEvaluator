@@ -117,7 +117,6 @@ export default function SignupForm() {
 							{error}
 						</div>
 					)}
-
 					<form onSubmit={handleSubmit} className="space-y-4">
 						<div>
 							<label className="block text-sm font-medium text-gray-700 mb-1">

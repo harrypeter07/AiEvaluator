@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
-import { prisma } from "@/lib/prisma";
+import { connectDB } from "@/lib/db";
+import User from "@/models/User";
 
 export async function POST(request) {
 	try {
@@ -11,8 +12,10 @@ export async function POST(request) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		// Get request body
-		const { assignmentName, mode } = await request.json();
+		// Connect to database
+		await connectDB();
+
+		const { assignmentName } = await request.json();
 
 		if (!assignmentName) {
 			return NextResponse.json(
@@ -21,40 +24,22 @@ export async function POST(request) {
 			);
 		}
 
-		// Get current count
-		const currentCount = await prisma.assignmentCount.findFirst({
-			where: {
-				assignmentName,
+		// Update user's assignments array
+		const result = await User.findOneAndUpdate(
+			{ email: session.user.email },
+			{
+				$addToSet: { assignments: assignmentName }, // Use addToSet to prevent duplicates
 			},
+			{
+				new: true, // Return updated document
+				upsert: true, // Create if doesn't exist
+			}
+		);
+
+		return NextResponse.json({
+			success: true,
+			count: result.assignments.length,
 		});
-
-		if (currentCount) {
-			// Update existing count
-			await prisma.assignmentCount.update({
-				where: {
-					assignmentName,
-				},
-				data: {
-					count: {
-						increment: 1,
-					},
-					lastUpdated: new Date(),
-					mode: mode || "single", // Store the mode of submission
-				},
-			});
-		} else {
-			// Create new count entry
-			await prisma.assignmentCount.create({
-				data: {
-					assignmentName,
-					count: 1,
-					lastUpdated: new Date(),
-					mode: mode || "single", // Store the mode of submission
-				},
-			});
-		}
-
-		return NextResponse.json({ success: true });
 	} catch (error) {
 		console.error("Error updating assignment count:", error);
 		return NextResponse.json(

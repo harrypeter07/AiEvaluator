@@ -12,6 +12,8 @@ export default function Dashboard() {
 	const [result, setResult] = useState("");
 	const [assignmentCount, setAssignmentCount] = useState(0);
 	const [mode, setMode] = useState("single"); // "single", "batch", or "compare"
+	const [previewUrls, setPreviewUrls] = useState({});
+	const [error, setError] = useState("");
 	const router = useRouter();
 
 	useEffect(() => {
@@ -25,6 +27,13 @@ export default function Dashboard() {
 			fetchAssignments();
 		}
 	}, [session]);
+
+	useEffect(() => {
+		// Cleanup preview URLs when component unmounts
+		return () => {
+			Object.values(previewUrls).forEach((url) => URL.revokeObjectURL(url));
+		};
+	}, [previewUrls]);
 
 	const fetchAssignments = async () => {
 		if (!session) return;
@@ -50,18 +59,88 @@ export default function Dashboard() {
 		}
 	};
 
-	const handleFileChange = (event, mode) => {
-		if (mode === "single") {
-			setFiles([event.target.files[0]]);
-		} else if (mode === "batch") {
-			setFiles(Array.from(event.target.files));
-		} else if (mode === "compare") {
-			if (event.target.name === "file1") {
-				setCompareFile1(event.target.files[0]);
-			} else {
-				setCompareFile2(event.target.files[0]);
+	const createPreviewUrl = (file) => {
+		const url = URL.createObjectURL(file);
+		setPreviewUrls((prev) => ({ ...prev, [file.name]: url }));
+		return url;
+	};
+
+	const handleFileChange = (e) => {
+		const files = Array.from(e.target.files);
+		const validTypes = [
+			"application/pdf",
+			"image/jpeg",
+			"image/png",
+			"image/jpg",
+			"application/msword",
+			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+		];
+		const maxSize = 10 * 1024 * 1024; // 10MB
+
+		const validFiles = files.filter((file) => {
+			if (!validTypes.includes(file.type)) {
+				setError(
+					`Invalid file type: ${file.name}. Please upload PDF, Word, or image files only.`
+				);
+				return false;
 			}
+			if (file.size > maxSize) {
+				setError(`File too large: ${file.name}. Maximum size is 10MB.`);
+				return false;
+			}
+			return true;
+		});
+
+		if (validFiles.length > 0) {
+			setFiles(validFiles);
+			setError("");
+			// Create preview URLs for valid files
+			validFiles.forEach((file) => {
+				createPreviewUrl(file);
+			});
 		}
+	};
+
+	const FilePreview = ({ file }) => {
+		if (!file) return null;
+
+		return (
+			<div className="mt-2 p-4 border rounded-lg bg-white shadow-sm">
+				<div className="flex items-center">
+					<div className="w-10 h-10 flex items-center justify-center bg-red-100 rounded">
+						<svg
+							className="w-6 h-6 text-red-500"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth="2"
+								d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+							/>
+						</svg>
+					</div>
+					<div className="ml-3">
+						<p className="text-sm font-medium text-gray-900">{file.name}</p>
+						<p className="text-xs text-gray-500">
+							{(file.size / 1024).toFixed(2)} KB
+						</p>
+					</div>
+					<div className="ml-auto">
+						<a
+							href={previewUrls[file.name]}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-sm text-blue-600 hover:text-blue-800"
+						>
+							Preview
+						</a>
+					</div>
+				</div>
+			</div>
+		);
 	};
 
 	const handleUpload = async () => {
@@ -207,9 +286,10 @@ export default function Dashboard() {
 						<input
 							type="file"
 							accept="application/pdf"
-							onChange={(e) => handleFileChange(e, "single")}
+							onChange={handleFileChange}
 							className="mb-4"
 						/>
+						{files[0] && <FilePreview file={files[0]} />}
 					</div>
 				)}
 
@@ -219,14 +299,14 @@ export default function Dashboard() {
 							type="file"
 							accept="application/pdf"
 							multiple
-							onChange={(e) => handleFileChange(e, "batch")}
+							onChange={handleFileChange}
 							className="mb-4"
 						/>
-						{files.length > 0 && (
-							<p className="text-sm text-gray-600">
-								Selected {files.length} file(s)
-							</p>
-						)}
+						<div className="space-y-2">
+							{files.map((file, index) => (
+								<FilePreview key={index} file={file} />
+							))}
+						</div>
 					</div>
 				)}
 
@@ -240,9 +320,10 @@ export default function Dashboard() {
 								type="file"
 								accept="application/pdf"
 								name="file1"
-								onChange={(e) => handleFileChange(e, "compare")}
+								onChange={handleFileChange}
 								className="mt-1"
 							/>
+							{compareFile1 && <FilePreview file={compareFile1} />}
 						</div>
 						<div>
 							<label className="block text-sm font-medium text-gray-700">
@@ -252,9 +333,10 @@ export default function Dashboard() {
 								type="file"
 								accept="application/pdf"
 								name="file2"
-								onChange={(e) => handleFileChange(e, "compare")}
+								onChange={handleFileChange}
 								className="mt-1"
 							/>
+							{compareFile2 && <FilePreview file={compareFile2} />}
 						</div>
 					</div>
 				)}
@@ -276,6 +358,130 @@ export default function Dashboard() {
 					<pre className="whitespace-pre-wrap font-sans text-gray-800">
 						{result}
 					</pre>
+				</div>
+			)}
+
+			{/* File Upload Section */}
+			<div className="space-y-4">
+				<div className="flex items-center justify-between">
+					<h3 className="text-lg font-medium text-gray-900">Upload Files</h3>
+					<div className="text-sm text-gray-500">
+						Supported formats: PDF, Word, Images (max 10MB)
+					</div>
+				</div>
+				<div className="flex items-center justify-center w-full">
+					<label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+						<div className="flex flex-col items-center justify-center pt-5 pb-6">
+							<svg
+								className="w-8 h-8 mb-2 text-gray-500"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth="2"
+									d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+								/>
+							</svg>
+							<p className="mb-2 text-sm text-gray-500">
+								<span className="font-semibold">Click to upload</span> or drag
+								and drop
+							</p>
+							<p className="text-xs text-gray-500">
+								PDF, Word, or Images (max 10MB)
+							</p>
+						</div>
+						<input
+							type="file"
+							className="hidden"
+							multiple
+							accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+							onChange={handleFileChange}
+							disabled={loading}
+						/>
+					</label>
+				</div>
+			</div>
+
+			{/* File Preview Section */}
+			{files.length > 0 && (
+				<div className="space-y-4">
+					<h3 className="text-lg font-medium text-gray-900">Selected Files</h3>
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+						{files.map((file, index) => (
+							<div
+								key={index}
+								className="flex items-center p-4 bg-white rounded-lg border border-gray-200 shadow-sm"
+							>
+								<div className="flex-shrink-0">
+									{file.type.startsWith("image/") ? (
+										<svg
+											className="w-8 h-8 text-blue-500"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth="2"
+												d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+											/>
+										</svg>
+									) : file.type === "application/pdf" ? (
+										<svg
+											className="w-8 h-8 text-red-500"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth="2"
+												d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+											/>
+										</svg>
+									) : (
+										<svg
+											className="w-8 h-8 text-blue-500"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+										>
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth="2"
+												d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+											/>
+										</svg>
+									)}
+								</div>
+								<div className="ml-4 flex-1">
+									<p className="text-sm font-medium text-gray-900 truncate">
+										{file.name}
+									</p>
+									<p className="text-xs text-gray-500">
+										{(file.size / 1024 / 1024).toFixed(2)} MB
+									</p>
+								</div>
+								<div className="ml-4">
+									<button
+										type="button"
+										onClick={() =>
+											window.open(previewUrls[file.name], "_blank")
+										}
+										className="text-blue-600 hover:text-blue-800"
+									>
+										Preview
+									</button>
+								</div>
+							</div>
+						))}
+					</div>
 				</div>
 			)}
 		</div>

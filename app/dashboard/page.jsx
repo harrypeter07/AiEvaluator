@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import ResultPreview from "@/components/ResultPreview";
 
 export default function Dashboard() {
 	const { data: session, status } = useSession();
@@ -352,14 +353,7 @@ export default function Dashboard() {
 				</button>
 			</div>
 
-			{result && (
-				<div className="mt-4 p-4 border rounded bg-gray-100">
-					<h2 className="font-semibold mb-2">Analysis Result:</h2>
-					<pre className="whitespace-pre-wrap font-sans text-gray-800">
-						{result}
-					</pre>
-				</div>
-			)}
+			{result && <ResultPreview response={result} />}
 
 			{/* File Upload Section */}
 			<div className="space-y-4">

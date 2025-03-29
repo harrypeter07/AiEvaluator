@@ -131,7 +131,7 @@ export default function CourseWorkDetails() {
 												{attachment.driveFile && (
 													<>
 														<div className="relative h-40 mb-2">
-                              {attachment.driveFile.thumbnailUr && (
+                              {attachment.driveFile.thumbnailUr.length && (
                                 <Image
 																src={attachment.driveFile.thumbnailUrl}
 																alt={attachment.driveFile.title}

@@ -10,7 +10,9 @@
 	},
 	"dependencies": {
 		"@google/generative-ai": "^0.24.0",
+		"axios": "^1.8.4",
 		"bcryptjs": "^3.0.2",
+		"dotenv": "^16.4.7",
 		"fs": "^0.0.1-security",
 		"googleapis": "^148.0.0",
 		"html2pdf.js": "^0.10.3",

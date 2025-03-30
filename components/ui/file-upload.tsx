@@ -5,6 +5,7 @@ import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { IconUpload } from "@tabler/icons-react";
 import useDropzone from "react-dropzone";
+import dynamic from "next/dynamic";
 
 const mainVariant = {
 	initial: {
@@ -42,7 +43,7 @@ interface FileRejection {
 	}>;
 }
 
-export const FileUpload: React.FC<FileUploadProps> = ({
+const FileUploadBase: React.FC<FileUploadProps> = ({
 	onChange,
 	accept = ".pdf,.doc,.docx,.jpg,.jpeg,.png",
 	maxSize = 10 * 1024 * 1024, // 10MB default
@@ -274,3 +275,10 @@ export function GridPattern() {
 		</div>
 	);
 }
+
+// Wrap the component with dynamic import to disable SSR
+const FileUpload = dynamic(() => Promise.resolve(FileUploadBase), {
+	ssr: false,
+});
+
+export { FileUpload };

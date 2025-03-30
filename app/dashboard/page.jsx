@@ -5,6 +5,125 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import ResultPreview from "@/components/ResultPreview";
 
+const FilePreviewBase = ({ file, previewUrl }) => {
+	if (!file) return null;
+
+	return (
+		<div className="mt-2 p-4 border rounded-lg bg-white shadow-sm">
+			<div className="flex items-center">
+				<div className="w-10 h-10 flex items-center justify-center bg-red-100 rounded">
+					<svg
+						className="w-6 h-6 text-red-500"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth="2"
+							d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+						/>
+					</svg>
+				</div>
+				<div className="ml-3">
+					<p className="text-sm font-medium text-gray-900">{file.name}</p>
+					<p className="text-xs text-gray-500">
+						{(file.size / 1024).toFixed(2)} KB
+					</p>
+				</div>
+				<div className="ml-auto">
+					<a
+						href={previewUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="text-sm text-blue-600 hover:text-blue-800"
+					>
+						Preview
+					</a>
+				</div>
+			</div>
+		</div>
+	);
+};
+
+const FilePreview = dynamic(() => Promise.resolve(FilePreviewBase), {
+	ssr: false,
+});
+
+const FilePreviewCardBase = ({ file, previewUrl }) => {
+	return (
+		<div className="flex items-center p-4 bg-white rounded-lg border border-gray-200 shadow-sm">
+			<div className="flex-shrink-0">
+				{file.type.startsWith("image/") ? (
+					<svg
+						className="w-8 h-8 text-blue-500"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth="2"
+							d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+						/>
+					</svg>
+				) : file.type === "application/pdf" ? (
+					<svg
+						className="w-8 h-8 text-red-500"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth="2"
+							d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+						/>
+					</svg>
+				) : (
+					<svg
+						className="w-8 h-8 text-blue-500"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth="2"
+							d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+						/>
+					</svg>
+				)}
+			</div>
+			<div className="ml-4 flex-1">
+				<p className="text-sm font-medium text-gray-900 truncate">
+					{file.name}
+				</p>
+				<p className="text-xs text-gray-500">
+					{(file.size / 1024 / 1024).toFixed(2)} MB
+				</p>
+			</div>
+			<div className="ml-4">
+				<button
+					type="button"
+					onClick={() => window.open(previewUrl, "_blank")}
+					className="text-blue-600 hover:text-blue-800"
+				>
+					Preview
+				</button>
+			</div>
+		</div>
+	);
+};
+
+const FilePreviewCard = dynamic(() => Promise.resolve(FilePreviewCardBase), {
+	ssr: false,
+});
+
 const DashboardBase = () => {
 	const { data: session, status } = useSession();
 	const [files, setFiles] = useState([]);
@@ -101,48 +220,6 @@ const DashboardBase = () => {
 				createPreviewUrl(file);
 			});
 		}
-	};
-
-	const FilePreview = ({ file }) => {
-		if (!file) return null;
-
-		return (
-			<div className="mt-2 p-4 border rounded-lg bg-white shadow-sm">
-				<div className="flex items-center">
-					<div className="w-10 h-10 flex items-center justify-center bg-red-100 rounded">
-						<svg
-							className="w-6 h-6 text-red-500"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth="2"
-								d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-							/>
-						</svg>
-					</div>
-					<div className="ml-3">
-						<p className="text-sm font-medium text-gray-900">{file.name}</p>
-						<p className="text-xs text-gray-500">
-							{(file.size / 1024).toFixed(2)} KB
-						</p>
-					</div>
-					<div className="ml-auto">
-						<a
-							href={previewUrls[file.name]}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="text-sm text-blue-600 hover:text-blue-800"
-						>
-							Preview
-						</a>
-					</div>
-				</div>
-			</div>
-		);
 	};
 
 	const handleUpload = async () => {
@@ -291,7 +368,12 @@ const DashboardBase = () => {
 							onChange={handleFileChange}
 							className="mb-4"
 						/>
-						{files[0] && <FilePreview file={files[0]} />}
+						{files[0] && (
+							<FilePreview
+								file={files[0]}
+								previewUrl={previewUrls[files[0].name]}
+							/>
+						)}
 					</div>
 				)}
 
@@ -306,7 +388,11 @@ const DashboardBase = () => {
 						/>
 						<div className="space-y-2">
 							{files.map((file, index) => (
-								<FilePreview key={index} file={file} />
+								<FilePreview
+									key={index}
+									file={file}
+									previewUrl={previewUrls[file.name]}
+								/>
 							))}
 						</div>
 					</div>
@@ -325,7 +411,12 @@ const DashboardBase = () => {
 								onChange={handleFileChange}
 								className="mt-1"
 							/>
-							{compareFile1 && <FilePreview file={compareFile1} />}
+							{compareFile1 && (
+								<FilePreview
+									file={compareFile1}
+									previewUrl={previewUrls[compareFile1.name]}
+								/>
+							)}
 						</div>
 						<div>
 							<label className="block text-sm font-medium text-gray-700">
@@ -338,7 +429,12 @@ const DashboardBase = () => {
 								onChange={handleFileChange}
 								className="mt-1"
 							/>
-							{compareFile2 && <FilePreview file={compareFile2} />}
+							{compareFile2 && (
+								<FilePreview
+									file={compareFile2}
+									previewUrl={previewUrls[compareFile2.name]}
+								/>
+							)}
 						</div>
 					</div>
 				)}
@@ -406,75 +502,11 @@ const DashboardBase = () => {
 					<h3 className="text-lg font-medium text-gray-900">Selected Files</h3>
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 						{files.map((file, index) => (
-							<div
+							<FilePreviewCard
 								key={index}
-								className="flex items-center p-4 bg-white rounded-lg border border-gray-200 shadow-sm"
-							>
-								<div className="flex-shrink-0">
-									{file.type.startsWith("image/") ? (
-										<svg
-											className="w-8 h-8 text-blue-500"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth="2"
-												d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-											/>
-										</svg>
-									) : file.type === "application/pdf" ? (
-										<svg
-											className="w-8 h-8 text-red-500"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth="2"
-												d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-											/>
-										</svg>
-									) : (
-										<svg
-											className="w-8 h-8 text-blue-500"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth="2"
-												d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-											/>
-										</svg>
-									)}
-								</div>
-								<div className="ml-4 flex-1">
-									<p className="text-sm font-medium text-gray-900 truncate">
-										{file.name}
-									</p>
-									<p className="text-xs text-gray-500">
-										{(file.size / 1024 / 1024).toFixed(2)} MB
-									</p>
-								</div>
-								<div className="ml-4">
-									<button
-										type="button"
-										onClick={() =>
-											window.open(previewUrls[file.name], "_blank")
-										}
-										className="text-blue-600 hover:text-blue-800"
-									>
-										Preview
-									</button>
-								</div>
-							</div>
+								file={file}
+								previewUrl={previewUrls[file.name]}
+							/>
 						))}
 					</div>
 				</div>

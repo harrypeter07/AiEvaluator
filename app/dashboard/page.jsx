@@ -2,9 +2,10 @@
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import ResultPreview from "@/components/ResultPreview";
 
-export default function Dashboard() {
+const DashboardBase = () => {
 	const { data: session, status } = useSession();
 	const [files, setFiles] = useState([]);
 	const [compareFile1, setCompareFile1] = useState(null);
@@ -480,4 +481,11 @@ export default function Dashboard() {
 			)}
 		</div>
 	);
-}
+};
+
+// Wrap the component with dynamic import to disable SSR
+const Dashboard = dynamic(() => Promise.resolve(DashboardBase), {
+	ssr: false,
+});
+
+export default Dashboard;

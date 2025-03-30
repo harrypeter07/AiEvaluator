@@ -7,9 +7,8 @@ const Loading = () => (
 	</div>
 );
 
-// Wrap the component with dynamic import to disable SSR
+// Wrap the component with dynamic import
 const DashboardClient = dynamic(() => import("@/components/DashboardContent"), {
-	ssr: false,
 	loading: () => <Loading />,
 });
 

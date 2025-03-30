@@ -5,6 +5,7 @@ import { Download, Printer } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import PropTypes from "prop-types";
 import { ErrorBoundary } from "react-error-boundary";
+import dynamic from "next/dynamic";
 
 const ErrorFallback = ({ error, resetErrorBoundary }) => (
 	<div className="bg-red-50 border border-red-200 rounded-lg p-6 shadow-md">
@@ -28,7 +29,7 @@ ErrorFallback.propTypes = {
 	resetErrorBoundary: PropTypes.func.isRequired,
 };
 
-const ResultPreview = ({ response }) => {
+const ResultPreviewBase = ({ response }) => {
 	const resultRef = useRef(null);
 	const [isClient, setIsClient] = useState(false);
 
@@ -235,8 +236,13 @@ const ResultPreview = ({ response }) => {
 	);
 };
 
-ResultPreview.propTypes = {
+ResultPreviewBase.propTypes = {
 	response: PropTypes.string.isRequired,
 };
 
-export default React.memo(ResultPreview);
+// Wrap the component with dynamic import to disable SSR
+const ResultPreview = dynamic(() => Promise.resolve(ResultPreviewBase), {
+	ssr: false,
+});
+
+export default ResultPreview;

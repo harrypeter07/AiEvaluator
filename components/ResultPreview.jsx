@@ -1,4 +1,6 @@
-import React, { useRef, useMemo } from "react";
+"use client";
+
+import React, { useRef, useMemo, useEffect, useState } from "react";
 import { Download, Printer } from "lucide-react";
 import html2pdf from "html2pdf.js";
 import PropTypes from "prop-types";
@@ -28,6 +30,11 @@ ErrorFallback.propTypes = {
 
 const ResultPreview = ({ response }) => {
 	const resultRef = useRef(null);
+	const [isClient, setIsClient] = useState(false);
+
+	useEffect(() => {
+		setIsClient(true);
+	}, []);
 
 	// Memoize the parsed response to prevent unnecessary re-renders
 	const parsedSections = useMemo(() => {
@@ -80,8 +87,12 @@ const ResultPreview = ({ response }) => {
 	};
 
 	const handleDownload = async () => {
+		if (!isClient) return;
+
 		try {
 			const element = resultRef.current;
+			if (!element) return;
+
 			const opt = {
 				margin: 1,
 				filename: "assignment-feedback.pdf",
@@ -97,6 +108,8 @@ const ResultPreview = ({ response }) => {
 	};
 
 	const handlePrint = () => {
+		if (!isClient) return;
+
 		try {
 			window.print();
 		} catch (error) {

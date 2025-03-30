@@ -7,7 +7,15 @@ import ResultPreview from "@/components/ResultPreview";
 import FileHandler from "@/components/FileHandler";
 
 // Wrap ResultPreview with dynamic import
-const DynamicResultPreview = dynamic(() => Promise.resolve(ResultPreview), {
+const DynamicResultPreview = dynamic(
+	() => import("@/components/ResultPreview"),
+	{
+		ssr: false,
+	}
+);
+
+// Wrap FileHandler with dynamic import
+const DynamicFileHandler = dynamic(() => import("@/components/FileHandler"), {
 	ssr: false,
 });
 
@@ -111,7 +119,7 @@ const DashboardContent = () => {
 				</button>
 			</div>
 
-			<FileHandler mode={mode} onResult={setResult} />
+			<DynamicFileHandler mode={mode} onResult={setResult} />
 
 			{result && <DynamicResultPreview response={result} />}
 		</div>

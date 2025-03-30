@@ -2,22 +2,8 @@
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
 import ResultPreview from "@/components/ResultPreview";
 import FileHandler from "@/components/FileHandler";
-
-// Wrap ResultPreview with dynamic import
-const DynamicResultPreview = dynamic(
-	() => import("@/components/ResultPreview"),
-	{
-		ssr: false,
-	}
-);
-
-// Wrap FileHandler with dynamic import
-const DynamicFileHandler = dynamic(() => import("@/components/FileHandler"), {
-	ssr: false,
-});
 
 const DashboardContent = () => {
 	const { data: session, status } = useSession();
@@ -119,9 +105,9 @@ const DashboardContent = () => {
 				</button>
 			</div>
 
-			<DynamicFileHandler mode={mode} onResult={setResult} />
+			<FileHandler mode={mode} onResult={setResult} />
 
-			{result && <DynamicResultPreview response={result} />}
+			{result && <ResultPreview response={result} />}
 		</div>
 	);
 };

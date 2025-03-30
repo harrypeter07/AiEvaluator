@@ -1,3 +1,4 @@
+"use client";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 
@@ -10,10 +11,11 @@ const Loading = () => (
 
 // Wrap the component with dynamic import
 const DashboardClient = dynamic(() => import("@/components/DashboardContent"), {
+	ssr: false,
 	loading: () => <Loading />,
 });
 
-// Main page component (server component)
+// Main page component (client component)
 export default function DashboardPage() {
 	return (
 		<Suspense fallback={<Loading />}>

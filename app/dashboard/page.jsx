@@ -124,30 +124,13 @@ const FilePreviewCard = dynamic(() => Promise.resolve(FilePreviewCardBase), {
 	ssr: false,
 });
 
-const DashboardBase = () => {
-	const { data: session, status } = useSession();
+const FileHandler = ({ mode, onResult }) => {
 	const [files, setFiles] = useState([]);
 	const [compareFile1, setCompareFile1] = useState(null);
 	const [compareFile2, setCompareFile2] = useState(null);
 	const [loading, setLoading] = useState(false);
-	const [result, setResult] = useState("");
-	const [assignmentCount, setAssignmentCount] = useState(0);
-	const [mode, setMode] = useState("single"); // "single", "batch", or "compare"
 	const [previewUrls, setPreviewUrls] = useState({});
 	const [error, setError] = useState("");
-	const router = useRouter();
-
-	useEffect(() => {
-		if (status === "unauthenticated") {
-			router.push("/login");
-		}
-	}, [status, router]);
-
-	useEffect(() => {
-		if (session) {
-			fetchAssignments();
-		}
-	}, [session]);
 
 	useEffect(() => {
 		// Cleanup preview URLs when component unmounts
@@ -155,30 +138,6 @@ const DashboardBase = () => {
 			Object.values(previewUrls).forEach((url) => URL.revokeObjectURL(url));
 		};
 	}, [previewUrls]);
-
-	const fetchAssignments = async () => {
-		if (!session) return;
-		try {
-			const response = await fetch("/api/assignments/count");
-			const data = await response.json();
-			if (response.ok) {
-				setAssignmentCount(data.count);
-			} else {
-				console.error("Error fetching assignments count:", data.error);
-			}
-		} catch (error) {
-			console.error("Failed to fetch assignments count", error);
-		}
-	};
-
-	const handleLogout = async () => {
-		try {
-			await signOut({ redirect: false });
-			router.push("/login");
-		} catch (error) {
-			console.error("Error logging out:", error);
-		}
-	};
 
 	const createPreviewUrl = (file) => {
 		const url = URL.createObjectURL(file);
@@ -239,7 +198,6 @@ const DashboardBase = () => {
 		}
 
 		setLoading(true);
-		setResult("");
 
 		const formData = new FormData();
 		if (mode === "single") {
@@ -250,8 +208,7 @@ const DashboardBase = () => {
 			});
 			const data = await response.json();
 			if (response.ok) {
-				setResult(data.feedback);
-				await updateAssignmentCount(files[0].name);
+				onResult(data.feedback);
 			} else {
 				alert("Error: " + data.error);
 			}
@@ -272,12 +229,7 @@ const DashboardBase = () => {
 			});
 			const data = await response.json();
 			if (response.ok) {
-				setResult(data.result);
-				if (mode === "batch") {
-					for (const file of files) {
-						await updateAssignmentCount(file.name);
-					}
-				}
+				onResult(data.result);
 			} else {
 				alert("Error: " + data.error);
 			}
@@ -286,19 +238,140 @@ const DashboardBase = () => {
 		setLoading(false);
 	};
 
-	const updateAssignmentCount = async (fileName) => {
+	return (
+		<div className="mb-6">
+			{mode === "single" && (
+				<div className="mb-4">
+					<input
+						type="file"
+						accept="application/pdf"
+						onChange={handleFileChange}
+						className="mb-4"
+					/>
+					{files[0] && (
+						<FilePreview
+							file={files[0]}
+							previewUrl={previewUrls[files[0].name]}
+						/>
+					)}
+				</div>
+			)}
+
+			{mode === "batch" && (
+				<div className="mb-4">
+					<input
+						type="file"
+						accept="application/pdf"
+						multiple
+						onChange={handleFileChange}
+						className="mb-4"
+					/>
+					<div className="space-y-2">
+						{files.map((file, index) => (
+							<FilePreview
+								key={index}
+								file={file}
+								previewUrl={previewUrls[file.name]}
+							/>
+						))}
+					</div>
+				</div>
+			)}
+
+			{mode === "compare" && (
+				<div className="space-y-4">
+					<div>
+						<label className="block text-sm font-medium text-gray-700">
+							First PDF
+						</label>
+						<input
+							type="file"
+							accept="application/pdf"
+							name="file1"
+							onChange={handleFileChange}
+							className="mt-1"
+						/>
+						{compareFile1 && (
+							<FilePreview
+								file={compareFile1}
+								previewUrl={previewUrls[compareFile1.name]}
+							/>
+						)}
+					</div>
+					<div>
+						<label className="block text-sm font-medium text-gray-700">
+							Second PDF
+						</label>
+						<input
+							type="file"
+							accept="application/pdf"
+							name="file2"
+							onChange={handleFileChange}
+							className="mt-1"
+						/>
+						{compareFile2 && (
+							<FilePreview
+								file={compareFile2}
+								previewUrl={previewUrls[compareFile2.name]}
+							/>
+						)}
+					</div>
+				</div>
+			)}
+
+			<button
+				onClick={handleUpload}
+				disabled={loading}
+				className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors ${
+					loading ? "opacity-50 cursor-not-allowed" : ""
+				}`}
+			>
+				{loading ? "Processing..." : "Analyze"}
+			</button>
+		</div>
+	);
+};
+
+const DashboardBase = () => {
+	const { data: session, status } = useSession();
+	const [mode, setMode] = useState("single");
+	const [result, setResult] = useState("");
+	const [assignmentCount, setAssignmentCount] = useState(0);
+	const router = useRouter();
+
+	useEffect(() => {
+		if (status === "unauthenticated") {
+			router.push("/login");
+		}
+	}, [status, router]);
+
+	useEffect(() => {
+		if (session) {
+			fetchAssignments();
+		}
+	}, [session]);
+
+	const fetchAssignments = async () => {
+		if (!session) return;
 		try {
-			await fetch("/api/assignments/updateCount", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					assignmentName: fileName,
-					mode: mode,
-				}),
-			});
-			await fetchAssignments();
+			const response = await fetch("/api/assignments/count");
+			const data = await response.json();
+			if (response.ok) {
+				setAssignmentCount(data.count);
+			} else {
+				console.error("Error fetching assignments count:", data.error);
+			}
 		} catch (error) {
-			console.error("Error updating assignment count:", error);
+			console.error("Failed to fetch assignments count", error);
+		}
+	};
+
+	const handleLogout = async () => {
+		try {
+			await signOut({ redirect: false });
+			router.push("/login");
+		} catch (error) {
+			console.error("Error logging out:", error);
 		}
 	};
 
@@ -332,185 +405,36 @@ const DashboardBase = () => {
 				</button>
 			</div>
 
-			<div className="mb-6">
-				<div className="flex space-x-4 mb-4">
-					<button
-						onClick={() => setMode("single")}
-						className={`px-4 py-2 rounded ${
-							mode === "single" ? "bg-blue-500 text-white" : "bg-gray-200"
-						}`}
-					>
-						Single Analysis
-					</button>
-					<button
-						onClick={() => setMode("batch")}
-						className={`px-4 py-2 rounded ${
-							mode === "batch" ? "bg-blue-500 text-white" : "bg-gray-200"
-						}`}
-					>
-						Batch Analysis
-					</button>
-					<button
-						onClick={() => setMode("compare")}
-						className={`px-4 py-2 rounded ${
-							mode === "compare" ? "bg-blue-500 text-white" : "bg-gray-200"
-						}`}
-					>
-						Compare PDFs
-					</button>
-				</div>
-
-				{mode === "single" && (
-					<div className="mb-4">
-						<input
-							type="file"
-							accept="application/pdf"
-							onChange={handleFileChange}
-							className="mb-4"
-						/>
-						{files[0] && (
-							<FilePreview
-								file={files[0]}
-								previewUrl={previewUrls[files[0].name]}
-							/>
-						)}
-					</div>
-				)}
-
-				{mode === "batch" && (
-					<div className="mb-4">
-						<input
-							type="file"
-							accept="application/pdf"
-							multiple
-							onChange={handleFileChange}
-							className="mb-4"
-						/>
-						<div className="space-y-2">
-							{files.map((file, index) => (
-								<FilePreview
-									key={index}
-									file={file}
-									previewUrl={previewUrls[file.name]}
-								/>
-							))}
-						</div>
-					</div>
-				)}
-
-				{mode === "compare" && (
-					<div className="space-y-4">
-						<div>
-							<label className="block text-sm font-medium text-gray-700">
-								First PDF
-							</label>
-							<input
-								type="file"
-								accept="application/pdf"
-								name="file1"
-								onChange={handleFileChange}
-								className="mt-1"
-							/>
-							{compareFile1 && (
-								<FilePreview
-									file={compareFile1}
-									previewUrl={previewUrls[compareFile1.name]}
-								/>
-							)}
-						</div>
-						<div>
-							<label className="block text-sm font-medium text-gray-700">
-								Second PDF
-							</label>
-							<input
-								type="file"
-								accept="application/pdf"
-								name="file2"
-								onChange={handleFileChange}
-								className="mt-1"
-							/>
-							{compareFile2 && (
-								<FilePreview
-									file={compareFile2}
-									previewUrl={previewUrls[compareFile2.name]}
-								/>
-							)}
-						</div>
-					</div>
-				)}
-
+			<div className="flex space-x-4 mb-4">
 				<button
-					onClick={handleUpload}
-					disabled={loading}
-					className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors ${
-						loading ? "opacity-50 cursor-not-allowed" : ""
+					onClick={() => setMode("single")}
+					className={`px-4 py-2 rounded ${
+						mode === "single" ? "bg-blue-500 text-white" : "bg-gray-200"
 					}`}
 				>
-					{loading ? "Processing..." : "Analyze"}
+					Single Analysis
+				</button>
+				<button
+					onClick={() => setMode("batch")}
+					className={`px-4 py-2 rounded ${
+						mode === "batch" ? "bg-blue-500 text-white" : "bg-gray-200"
+					}`}
+				>
+					Batch Analysis
+				</button>
+				<button
+					onClick={() => setMode("compare")}
+					className={`px-4 py-2 rounded ${
+						mode === "compare" ? "bg-blue-500 text-white" : "bg-gray-200"
+					}`}
+				>
+					Compare PDFs
 				</button>
 			</div>
 
+			<FileHandler mode={mode} onResult={setResult} />
+
 			{result && <ResultPreview response={result} />}
-
-			{/* File Upload Section */}
-			<div className="space-y-4">
-				<div className="flex items-center justify-between">
-					<h3 className="text-lg font-medium text-gray-900">Upload Files</h3>
-					<div className="text-sm text-gray-500">
-						Supported formats: PDF, Word, Images (max 10MB)
-					</div>
-				</div>
-				<div className="flex items-center justify-center w-full">
-					<label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-						<div className="flex flex-col items-center justify-center pt-5 pb-6">
-							<svg
-								className="w-8 h-8 mb-2 text-gray-500"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth="2"
-									d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-								/>
-							</svg>
-							<p className="mb-2 text-sm text-gray-500">
-								<span className="font-semibold">Click to upload</span> or drag
-								and drop
-							</p>
-							<p className="text-xs text-gray-500">
-								PDF, Word, or Images (max 10MB)
-							</p>
-						</div>
-						<input
-							type="file"
-							className="hidden"
-							multiple
-							accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-							onChange={handleFileChange}
-							disabled={loading}
-						/>
-					</label>
-				</div>
-			</div>
-
-			{/* File Preview Section */}
-			{files.length > 0 && (
-				<div className="space-y-4">
-					<h3 className="text-lg font-medium text-gray-900">Selected Files</h3>
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-						{files.map((file, index) => (
-							<FilePreviewCard
-								key={index}
-								file={file}
-								previewUrl={previewUrls[file.name]}
-							/>
-						))}
-					</div>
-				</div>
-			)}
 		</div>
 	);
 };

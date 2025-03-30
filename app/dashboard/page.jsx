@@ -1,7 +1,4 @@
-"use client";
-import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import DashboardContent from "@/components/DashboardContent";
 
 // Loading component
 const Loading = () => (
@@ -11,16 +8,12 @@ const Loading = () => (
 );
 
 // Wrap the component with dynamic import to disable SSR
-const Dashboard = dynamic(() => Promise.resolve(DashboardContent), {
+const DashboardClient = dynamic(() => import("@/components/DashboardContent"), {
 	ssr: false,
 	loading: () => <Loading />,
 });
 
-// Main page component
+// Main page component (server component)
 export default function DashboardPage() {
-	return (
-		<Suspense fallback={<Loading />}>
-			<Dashboard />
-		</Suspense>
-	);
+	return <DashboardClient />;
 }

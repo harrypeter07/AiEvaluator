@@ -2,7 +2,11 @@
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import ResultPreview from "@/components/ResultPreview";
+import dynamic from "next/dynamic";
+
+const ResultPreview = dynamic(() => import("@/components/ResultPreview"), {
+	ssr: false,
+});
 
 export default function Dashboard() {
 <<<<<<< HEAD

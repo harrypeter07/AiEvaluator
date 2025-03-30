@@ -122,7 +122,7 @@ export default function CourseWorkDetails() {
 							</div>
 
 							{/* Attachments */}
-							{submission.attachments.length > 0 && (
+							{submission.attachments != undefined && submission.attachments.length > 0 && (
 								<div className="mt-4">
 									<h3 className="text-lg font-medium mb-2">Attachments</h3>
 									<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -131,15 +131,14 @@ export default function CourseWorkDetails() {
 												{attachment.driveFile && (
 													<>
 														<div className="relative h-40 mb-2">
-                              {attachment.driveFile.thumbnailUr.length && (
-                                <Image
-																src={attachment.driveFile.thumbnailUrl}
-																alt={attachment.driveFile.title}
-																fill
-																className="object-contain"
-															/>
-                              )}
-															
+															{attachment.driveFile.thumbnailUrl != undefined && attachment.driveFile.thumbnailUrl.length && (
+																<Image
+																	src={attachment.driveFile.thumbnailUrl}
+																	alt={attachment.driveFile.title}
+																	fill
+																	className="object-contain"
+																/>
+															)}
 														</div>
 														<p className="font-medium truncate">
 															{attachment.driveFile.title}

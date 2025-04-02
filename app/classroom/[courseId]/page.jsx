@@ -10,6 +10,8 @@ export default function CourseAssignments() {
 	const { courseId } = useParams();
 	const { data: session, status } = useSession();
 	const [assignments, setAssignments] = useState([]);
+	const [courseDetails, setCourseDetails] = useState(null);
+	const [studentNames, setStudentNames] = useState({});
 
 	useEffect(() => {
 		if (status === "authenticated" && session?.provider === "google") {
@@ -25,6 +27,14 @@ export default function CourseAssignments() {
 			const data = await res.json();
 			if (!res.ok) throw new Error(data.error || "Failed to fetch");
 			setAssignments(data.assignments || []);
+			setCourseDetails(data.course || null);
+			setStudentNames(data.studentNames || {});
+
+			// Store student names in sessionStorage for child routes
+			sessionStorage.setItem(
+				`studentNames-${courseId}`,
+				JSON.stringify(data.studentNames || {})
+			);
 		} catch (error) {
 			console.error("Error fetching course assignments:", error);
 		}
@@ -71,9 +81,11 @@ export default function CourseAssignments() {
 				<div className="flex items-center justify-between mb-8">
 					<div>
 						<h1 className="text-3xl font-bold text-gray-900">
-							Course Assignments
+							{courseDetails?.name || "Course Assignments"}
 						</h1>
-						<p className="mt-2 text-gray-600">Course ID: {courseId}</p>
+						<p className="mt-2 text-gray-600">
+							{courseDetails?.description || `Course ID: ${courseId}`}
+						</p>
 					</div>
 					<Link
 						href="/classroom"

@@ -44,21 +44,57 @@ export async function GET(req) {
 				courseWorkId,
 			});
 
-		// Map submissions to include all necessary information
-		const submissions =
-			submissionsResponse.data.studentSubmissions?.map((sub) => ({
-				id: sub.id,
-				userId: sub.userId,
-				state: sub.state,
-				assignedGrade: sub.assignedGrade,
-				draftGrade: sub.draftGrade,
-				late: sub.late,
-				creationTime: sub.creationTime,
-				updateTime: sub.updateTime,
-				alternateLink: sub.alternateLink,
-				courseWorkType: sub.courseWorkType,
-				attachments: sub.assignmentSubmission?.attachments || [],
-			})) || [];
+		// Get submissions
+		const submissionsData = submissionsResponse.data.studentSubmissions || [];
+
+		// Prepare for student profiles
+		let studentProfiles = {};
+
+		// Try to fetch student profiles if we have the permissions
+		try {
+			const studentIds = submissionsData
+				.map((sub) => sub.userId)
+				.filter(Boolean);
+
+			if (studentIds.length > 0) {
+				// Fetch user profiles for the course
+				const studentsResponse = await classroom.courses.students.list({
+					courseId,
+				});
+
+				const students = studentsResponse.data.students || [];
+
+				// Create lookup by userId
+				students.forEach((student) => {
+					if (student.userId && student.profile) {
+						studentProfiles[student.userId] = {
+							name: student.profile.name?.fullName || "Unknown",
+							emailAddress: student.profile.emailAddress,
+						};
+					}
+				});
+			}
+		} catch (err) {
+			console.error("Error fetching student profiles:", err);
+			// Continue with empty student profiles
+		}
+
+		// Map submissions
+		const submissions = submissionsData.map((sub) => ({
+			id: sub.id,
+			userId: sub.userId,
+			studentName: studentProfiles[sub.userId]?.name || null, // Will be null if we don't have permission
+			studentEmail: studentProfiles[sub.userId]?.emailAddress || null,
+			state: sub.state,
+			assignedGrade: sub.assignedGrade,
+			draftGrade: sub.draftGrade,
+			late: sub.late,
+			creationTime: sub.creationTime,
+			updateTime: sub.updateTime,
+			alternateLink: sub.alternateLink,
+			courseWorkType: sub.courseWorkType,
+			attachments: sub.assignmentSubmission?.attachments || [],
+		}));
 
 		return NextResponse.json(
 			{

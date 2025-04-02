@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,6 +14,15 @@ export default function CourseWorkDetails() {
 	const [submissions, setSubmissions] = useState([]);
 	const [selectedSubmission, setSelectedSubmission] = useState(null);
 	const [previewUrl, setPreviewUrl] = useState(null);
+	const [studentNames, setStudentNames] = useState({});
+
+	useEffect(() => {
+		// Load student names from sessionStorage
+		const storedNames = sessionStorage.getItem(`studentNames-${courseId}`);
+		if (storedNames) {
+			setStudentNames(JSON.parse(storedNames));
+		}
+	}, [courseId]);
 
 	useEffect(() => {
 		if (status === "authenticated" && session?.provider === "google") {
@@ -91,6 +100,29 @@ export default function CourseWorkDetails() {
 	return (
 		<div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
 			<div className="max-w-7xl mx-auto">
+				{/* Add sign out button */}
+				{status === "authenticated" && (
+					<div className="mb-4 flex justify-end">
+						<button
+							onClick={() => signOut({ callbackUrl: "/login" })}
+							className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+						>
+							<svg
+								className="-ml-1 mr-2 h-5 w-5"
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 20 20"
+								fill="currentColor"
+							>
+								<path
+									fillRule="evenodd"
+									d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1H3zm11 4.414l-4.293 4.293a1 1 0 01-1.414 0L4 7.414V15h12V7.414z"
+									clipRule="evenodd"
+								/>
+							</svg>
+							Sign out to refresh permissions
+						</button>
+					</div>
+				)}
 				<div className="flex items-center justify-between mb-8">
 					<div>
 						<Link
@@ -172,10 +204,22 @@ export default function CourseWorkDetails() {
 												</span>
 											)}
 										</div>
+										{submission.studentName && (
+											<p className="text-sm text-gray-600">
+												<span className="font-medium">Student:</span>{" "}
+												{submission.studentName}
+											</p>
+										)}
 										<p className="text-sm text-gray-600">
 											<span className="font-medium">Student ID:</span>{" "}
 											{submission.userId}
 										</p>
+										{submission.studentEmail && (
+											<p className="text-sm text-gray-600">
+												<span className="font-medium">Email:</span>{" "}
+												{submission.studentEmail}
+											</p>
+										)}
 										<p className="text-sm text-gray-600">
 											<span className="font-medium">Submitted:</span>{" "}
 											{formatDate(submission.creationTime)}

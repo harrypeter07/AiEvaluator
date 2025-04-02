@@ -10,6 +10,8 @@ const DashboardContent = () => {
 	const [mode, setMode] = useState("single");
 	const [result, setResult] = useState("");
 	const [assignmentCount, setAssignmentCount] = useState(0);
+	const [isLoading, setIsLoading] = useState(true);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const router = useRouter();
 
 	useEffect(() => {
@@ -26,6 +28,7 @@ const DashboardContent = () => {
 
 	const fetchAssignments = async () => {
 		if (!session) return;
+		setIsLoading(true);
 		try {
 			const response = await fetch("/api/assignments/count");
 			const data = await response.json();
@@ -36,6 +39,8 @@ const DashboardContent = () => {
 			}
 		} catch (error) {
 			console.error("Failed to fetch assignments count", error);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -48,10 +53,13 @@ const DashboardContent = () => {
 		}
 	};
 
-	if (status === "loading") {
+	if (status === "loading" || isLoading) {
 		return (
 			<div className="flex items-center justify-center h-screen">
-				<div className="text-xl">Loading...</div>
+				<div className="text-center">
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+					<div className="text-xl text-gray-600">Loading dashboard...</div>
+				</div>
 			</div>
 		);
 	}
@@ -105,7 +113,25 @@ const DashboardContent = () => {
 				</button>
 			</div>
 
-			<FileHandler mode={mode} onResult={setResult} />
+			<FileHandler
+				mode={mode}
+				onResult={setResult}
+				onLoadingChange={setIsSubmitting}
+			/>
+
+			{isSubmitting && (
+				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+					<div className="bg-white p-6 rounded-lg shadow-xl text-center">
+						<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+						<div className="text-xl text-gray-600">
+							Processing your request...
+						</div>
+						<div className="text-sm text-gray-500 mt-2">
+							This may take a few moments
+						</div>
+					</div>
+				</div>
+			)}
 
 			{result && <ResultPreview response={result} />}
 		</div>

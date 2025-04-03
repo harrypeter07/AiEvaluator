@@ -136,8 +136,7 @@ Please be thorough but concise in your analysis.`
 
 		const analysis = response.text;
 		const similarityScore = extractSimilarityScore(analysis);
-       console.log("response"  ,analysis)
-       console.log("similair"  ,similarityScore)
+      
 		// Save comparison results to database
 		const comparison = new Assignment({
 			userId: user._id,
@@ -165,7 +164,6 @@ Please be thorough but concise in your analysis.`
 			},
 			feedback: analysis
 		};
-console.log("formattedResponse"  ,formattedResponse)
 		return NextResponse.json(formattedResponse);
 	} catch (error) {
 		console.error("Error comparing PDFs:", error);

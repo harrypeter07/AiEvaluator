@@ -21,13 +21,13 @@ const DashboardContent = () => {
 	}, [status, router]);
 
 	useEffect(() => {
-		if (session) {
+		if (session?.user?.email) {
 			fetchAssignments();
 		}
-	}, [session]);
+	}, [session?.user?.email]);
 
 	const fetchAssignments = async () => {
-		if (!session) return;
+		if (!session?.user?.email) return;
 		setIsLoading(true);
 		try {
 			const response = await fetch("/api/assignments/count");

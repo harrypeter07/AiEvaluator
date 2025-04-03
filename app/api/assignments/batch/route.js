@@ -12,26 +12,28 @@ export async function POST(request) {
 		}
 
 		const formData = await request.formData();
-		const files = formData.getAll("files");
 		const mode = formData.get("mode"); // "batch" or "compare"
-		const file1 = formData.get("file1");
-		const file2 = formData.get("file2");
-
-		if (mode === "compare" && (!file1 || !file2)) {
-			return NextResponse.json(
-				{ error: "Both files are required for comparison" },
-				{ status: 400 }
-			);
-		}
-
-		if (mode === "batch" && (!files || files.length === 0)) {
-			return NextResponse.json({ error: "No files provided" }, { status: 400 });
-		}
-
+		
 		let result;
 		if (mode === "compare") {
+			const file1 = formData.get("file1");
+			const file2 = formData.get("file2");
+			
+			if (!file1 || !file2) {
+				return NextResponse.json(
+					{ error: "Both files are required for comparison" },
+					{ status: 400 }
+				);
+			}
+			
 			result = await comparePDFs(file1, file2);
 		} else {
+			const files = formData.getAll("files");
+			
+			if (!files || files.length === 0) {
+				return NextResponse.json({ error: "No files provided" }, { status: 400 });
+			}
+			
 			result = await processMultiplePDFs(files);
 		}
 

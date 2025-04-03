@@ -9,6 +9,7 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
+		"@google/genai": "^0.7.0",
 		"@google/generative-ai": "^0.24.0",
 		"@tabler/icons-react": "^3.31.0",
 		"axios": "^1.8.4",

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
+import ComparisonResult from './ComparisonResult';
 
 const FilePreviewBase = ({ file, previewUrl }) => {
 	if (!file) return null;
@@ -9,9 +10,9 @@ const FilePreviewBase = ({ file, previewUrl }) => {
 	return (
 		<div className="mt-2 p-4 border rounded-lg bg-white shadow-sm">
 			<div className="flex items-center">
-				<div className="w-10 h-10 flex items-center justify-center bg-red-100 rounded">
+				<div className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded">
 					<svg
-						className="w-6 h-6 text-red-500"
+						className="w-6 h-6 text-gray-500"
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
@@ -59,6 +60,7 @@ const FileHandlerBase = ({ mode, onResult }) => {
 	const [loading, setLoading] = useState(false);
 	const [previewUrls, setPreviewUrls] = useState({});
 	const [error, setError] = useState("");
+	const [result, setResult] = useState(null);
 
 	useEffect(() => {
 		// Cleanup preview URLs when component unmounts
@@ -194,6 +196,7 @@ const FileHandlerBase = ({ mode, onResult }) => {
 				}
 
 				const data = await response.json();
+				setResult(data.feedback);
 				onResult(data.feedback);
 			} else if (mode === "batch") {
 				// Validate all files are PDFs
@@ -259,7 +262,42 @@ const FileHandlerBase = ({ mode, onResult }) => {
 					combinedFeedback += "=".repeat(50) + "\n\n";
 				});
 
+				setResult(combinedFeedback);
 				onResult(combinedFeedback);
+
+
+
+
+
+
+			} else if (mode === "compare") {
+				const formData = new FormData();
+				formData.append("file1", compareFile1);
+				formData.append("file2", compareFile2);
+
+				const response = await fetch("/api/assignments/compare", {
+					method: "POST",
+					body: formData,
+				});
+
+				if (!response.ok) {
+					const errorData = await response.json();
+					if (response.status === 401) {
+						alert(
+							"Your session has expired. Please sign in again to continue."
+						);
+						return;
+					}
+					throw new Error(errorData.error || "Failed to compare PDFs");
+				}
+
+				const data = await response.json();
+				if (data.success) {
+					setResult(data.feedback);
+					onResult(data.feedback);
+				} else {
+					throw new Error(data.error || "Failed to compare PDFs");
+				}
 			}
 		} catch (error) {
 			console.error("Error uploading file:", error);
@@ -270,33 +308,38 @@ const FileHandlerBase = ({ mode, onResult }) => {
 	};
 
 	return (
-		<div className="mb-6">
+		<div className="p-6 rounded-lg shadow-md">
 			{mode === "single" && (
-				<div className="mb-4">
-					<div className="mb-3">
-						<label className="block text-sm font-medium text-gray-700 mb-1">
-							Assignment Title
+				<div className="space-y-4">
+					<div>
+						<label className="block text-sm font-medium text-gray-700">
+							Upload PDF
+						</label>
+						<input
+							type="file"
+							accept="application/pdf"
+							onChange={handleFileChange}
+							className="mt-1"
+						/>
+						{files.length > 0 && (
+							<FilePreview
+								file={files[0]}
+								previewUrl={previewUrls[files[0].name]}
+							/>
+						)}
+					</div>
+					<div>
+						<label className="block text-sm font-medium text-gray-700">
+							Titleg
 						</label>
 						<input
 							type="text"
 							value={title}
 							onChange={handleSingleTitleChange}
-							className="w-full px-3 py-2 border border-gray-300 rounded-md"
+							className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
 							placeholder="Enter assignment title"
 						/>
 					</div>
-					<input
-						type="file"
-						accept="application/pdf"
-						onChange={handleFileChange}
-						className="mb-4"
-					/>
-					{files[0] && (
-						<FilePreview
-							file={files[0]}
-							previewUrl={previewUrls[files[0].name]}
-						/>
-					)}
 				</div>
 			)}
 
@@ -383,6 +426,16 @@ const FileHandlerBase = ({ mode, onResult }) => {
 			>
 				{loading ? "Processing..." : "Analyze"}
 			</button>
+
+			{result && (
+				<div className="mt-8">
+					{mode === "compare" ? (
+						<ComparisonResult response={result} />
+					) : (
+						<ResultPreview response={result} />
+					)}
+				</div>
+			)}
 		</div>
 	);
 };

@@ -2,16 +2,16 @@
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import ResultPreview from "@/components/ResultPreview";
 import FileHandler from "@/components/FileHandler";
 
-const DashboardContent = () => {
+const DashboardContentBase = () => {
 	const { data: session, status } = useSession();
 	const [mode, setMode] = useState("single");
 	const [result, setResult] = useState("");
-	const [assignmentCount, setAssignmentCount] = useState(0);
-	const [isLoading, setIsLoading] = useState(true);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [assignmentCount, setAssignmentCount] = useState(0);
 	const router = useRouter();
 
 	useEffect(() => {
@@ -21,39 +21,27 @@ const DashboardContent = () => {
 	}, [status, router]);
 
 	useEffect(() => {
-		if (session?.user?.email) {
-			fetchAssignments();
+		if (status === "authenticated") {
+			fetchAssignmentCount();
 		}
-	}, [session?.user?.email]);
+	}, [status]);
 
-	const fetchAssignments = async () => {
-		if (!session?.user?.email) return;
-		setIsLoading(true);
+	const fetchAssignmentCount = async () => {
 		try {
 			const response = await fetch("/api/assignments/count");
+			if (!response.ok) throw new Error("Failed to fetch assignment count");
 			const data = await response.json();
-			if (response.ok) {
-				setAssignmentCount(data.count);
-			} else {
-				console.error("Error fetching assignments count:", data.error);
-			}
+			setAssignmentCount(data.count);
 		} catch (error) {
-			console.error("Failed to fetch assignments count", error);
-		} finally {
-			setIsLoading(false);
+			console.error("Error fetching assignment count:", error);
 		}
 	};
 
 	const handleLogout = async () => {
-		try {
-			await signOut({ redirect: false });
-			router.push("/login");
-		} catch (error) {
-			console.error("Error logging out:", error);
-		}
+		await signOut({ callbackUrl: "/login" });
 	};
 
-	if (status === "loading" || isLoading) {
+	if (status === "loading") {
 		return (
 			<div className="flex items-center justify-center h-screen">
 				<div className="text-center">
@@ -96,14 +84,6 @@ const DashboardContent = () => {
 					Single Analysis
 				</button>
 				<button
-					onClick={() => setMode("batch")}
-					className={`px-4 py-2 rounded ${
-						mode === "batch" ? "bg-blue-500 text-white" : "bg-gray-200"
-					}`}
-				>
-					Batch Analysis
-				</button>
-				<button
 					onClick={() => setMode("compare")}
 					className={`px-4 py-2 rounded ${
 						mode === "compare" ? "bg-blue-500 text-white" : "bg-gray-200"
@@ -119,23 +99,17 @@ const DashboardContent = () => {
 				onLoadingChange={setIsSubmitting}
 			/>
 
-			{isSubmitting && (
-				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-					<div className="bg-white p-6 rounded-lg shadow-xl text-center">
-						<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-						<div className="text-xl text-gray-600">
-							Processing your request...
-						</div>
-						<div className="text-sm text-gray-500 mt-2">
-							This may take a few moments
-						</div>
-					</div>
+			{result && (
+				<div className="mt-8">
+					<ResultPreview response={result} />
 				</div>
 			)}
-
-			{result && <ResultPreview response={result} />}
 		</div>
 	);
 };
+
+const DashboardContent = dynamic(() => Promise.resolve(DashboardContentBase), {
+	ssr: false,
+});
 
 export default DashboardContent;

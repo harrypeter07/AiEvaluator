@@ -66,7 +66,7 @@ export async function GET(req) {
 				}
 			} catch (error) {
 				console.log(
-					"Could not fetch student details - continuing without student names"
+					"Could not fetch student details - continuing without student names" , error
 				);
 			}
 		}

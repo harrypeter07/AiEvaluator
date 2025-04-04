@@ -280,6 +280,7 @@ export default function CourseWorkDetails() {
 														{attachment.driveFile && (
 															<>
 																<div className="relative h-40 mb-3 rounded-md overflow-hidden bg-white">
+																	
 																	{attachment.driveFile.thumbnailUrl !=
 																		undefined &&
 																		attachment.driveFile.thumbnailUrl
@@ -310,6 +311,7 @@ export default function CourseWorkDetails() {
 																	>
 																		Download
 																	</a>
+																	{attachment.driveFile.alternateLink}
 																</div>
 															</>
 														)}

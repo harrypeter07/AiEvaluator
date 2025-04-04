@@ -1,5 +1,4 @@
 import { analyzeAssignment } from "@/lib/gemini";
-import { generateContentHash, checkPlagiarism } from "@/lib/plagiarism";
 import Assignment from "@/models/Assignment";
 import User from "@/models/User";
 import { connectDB } from "@/lib/db";
@@ -63,25 +62,12 @@ export async function POST(req) {
 			throw new Error("Failed to analyze PDF");
 		}
 
-		// Generate hash and check plagiarism
-		const fileHash = generateContentHash(base64Data);
-		const existingAssignments = await Assignment.find({
-			userId: { $ne: user._id },
-		});
-		const plagiarismReport = checkPlagiarism(
-			analysis.extractedText,
-			existingAssignments
-		);
-
 		// Create and save assignment
 		const assignment = new Assignment({
 			userId: user._id,
 			title,
 			content: analysis.extractedText,
 			originalFileName: pdf.name,
-			fileHash,
-			plagiarismScore: plagiarismReport.overallRisk,
-			similarityMatches: plagiarismReport.potentialPlagiarism,
 			feedback: analysis.extractedText,
 		});
 
@@ -89,8 +75,6 @@ export async function POST(req) {
 
 		return Response.json({
 			success: true,
-			plagiarismScore: plagiarismReport.overallRisk,
-			similarityMatches: plagiarismReport.potentialPlagiarism,
 			feedback: analysis.extractedText,
 		});
 	} catch (error) {

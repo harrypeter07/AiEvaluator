@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Download, AlertTriangle, CheckCircle, Info } from "lucide-react";
 import dynamic from "next/dynamic";
-import html2pdf from "html2pdf.js";
+// import html2pdf from "html2pdf.js";
 
 const ComparisonResultBase = ({ response }) => {
 	const resultRef = useRef(null);
@@ -78,15 +78,16 @@ const ComparisonResultBase = ({ response }) => {
 	};
 
 	const handleDownload = async () => {
-		const element = resultRef.current;
-		const opt = {
-			margin: 1,
-			filename: "comparison-analysis.pdf",
-			image: { type: "jpeg", quality: 0.98 },
-			html2canvas: { scale: 2 },
-			jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-		};
-		await html2pdf().set(opt).from(element).save();
+		// const element = resultRef.current;
+		// const opt = {
+		// 	margin: 1,
+		// 	filename: "comparison-analysis.pdf",
+		// 	image: { type: "jpeg", quality: 0.98 },
+		// 	html2canvas: { scale: 2 },
+		// 	jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+		// };
+		// await html2pdf().set(opt).from(element).save();
+        alert("donwloadddddd")
 	};
 
 	if (!mounted || !sections) {

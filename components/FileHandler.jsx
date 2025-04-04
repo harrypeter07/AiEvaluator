@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
-import ComparisonResult from './ComparisonResult';
+import ComparisonResult from "./ComparisonResult";
+import ResultPreview from "./ResultPreview";
 
 const FilePreviewBase = ({ file, previewUrl }) => {
 	if (!file) return null;
@@ -50,7 +51,7 @@ const FilePreview = dynamic(() => Promise.resolve(FilePreviewBase), {
 	ssr: false,
 });
 
-const FileHandlerBase = ({ mode, onResult }) => {
+const FileHandlerBase = ({ mode, onResult, onLoadingChange }) => {
 	const { data: session } = useSession();
 	const [files, setFiles] = useState([]);
 	const [compareFile1, setCompareFile1] = useState(null);
@@ -167,12 +168,14 @@ const FileHandlerBase = ({ mode, onResult }) => {
 		}
 
 		setLoading(true);
+		setError("");
 
 		try {
 			if (mode === "single") {
 				const file = files[0];
 				if (!file.type.includes("pdf")) {
 					alert("Please upload a PDF file.");
+					setLoading(false);
 					return;
 				}
 				const formData = new FormData();
@@ -196,8 +199,9 @@ const FileHandlerBase = ({ mode, onResult }) => {
 				}
 
 				const data = await response.json();
-				setResult(data.feedback);
-				onResult(data.feedback);
+				if (onResult) {
+					onResult(data.feedback);
+				}
 			} else if (mode === "batch") {
 				// Validate all files are PDFs
 				for (const file of files) {
@@ -263,13 +267,9 @@ const FileHandlerBase = ({ mode, onResult }) => {
 				});
 
 				setResult(combinedFeedback);
-				onResult(combinedFeedback);
-
-
-
-
-
-
+				if (onResult) {
+					onResult(combinedFeedback);
+				}
 			} else if (mode === "compare") {
 				const formData = new FormData();
 				formData.append("file1", compareFile1);
@@ -294,14 +294,16 @@ const FileHandlerBase = ({ mode, onResult }) => {
 				const data = await response.json();
 				if (data.success) {
 					setResult(data.feedback);
-					onResult(data.feedback);
+					if (onResult) {
+						onResult(data);
+					}
 				} else {
 					throw new Error(data.error || "Failed to compare PDFs");
 				}
 			}
 		} catch (error) {
 			console.error("Error uploading file:", error);
-			alert(error.message || "Error uploading file");
+			setError(error.message || "Error uploading file");
 		} finally {
 			setLoading(false);
 		}
@@ -330,7 +332,7 @@ const FileHandlerBase = ({ mode, onResult }) => {
 					</div>
 					<div>
 						<label className="block text-sm font-medium text-gray-700">
-							Titleg
+							Title
 						</label>
 						<input
 							type="text"
@@ -430,7 +432,9 @@ const FileHandlerBase = ({ mode, onResult }) => {
 			{result && (
 				<div className="mt-8">
 					{mode === "compare" ? (
-						<ComparisonResult response={result} />
+						// <ComparisonResult response={result} />
+						
+							<h1>hello</h1>
 					) : (
 						<ResultPreview response={result} />
 					)}

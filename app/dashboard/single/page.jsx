@@ -10,7 +10,7 @@ import ResultPreview from "@/components/ResultPreview";
 
 const SingleAnalysisPageBase = () => {
 	const { data: session, status } = useSession();
-	const [result, setResult] = useState("");
+	const [result, setResult] = useState(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const router = useRouter();
 
@@ -21,6 +21,10 @@ const SingleAnalysisPageBase = () => {
 		}
 	}, [status, router]);
 
+	const handleResult = (resultData) => {
+		setResult(resultData);
+	};
+
 	if (status === "loading" || isSubmitting) {
 		return (
 			<div className="flex items-center justify-center h-screen">
@@ -29,6 +33,11 @@ const SingleAnalysisPageBase = () => {
 					<div className="text-xl text-gray-600">
 						{isSubmitting ? "Analyzing PDF..." : "Loading..."}
 					</div>
+					{isSubmitting && (
+						<p className="text-sm text-gray-500 mt-2">
+							This may take a few moments depending on the file size
+						</p>
+					)}
 				</div>
 			</div>
 		);
@@ -42,9 +51,9 @@ const SingleAnalysisPageBase = () => {
 		<div className="max-w-4xl mx-auto p-6">
 			<div className="flex justify-between items-center mb-6">
 				<div>
-					<h1 className="text-2xl font-bold">Single PDF Analysis</h1>
+					<h1 className="text-2xl font-bold">Analyze Assignment</h1>
 					<p className="text-gray-600 mt-1">
-						Upload a PDF file to get detailed feedback and analysis
+						Upload a PDF file to analyze its content
 					</p>
 				</div>
 				<Link
@@ -59,20 +68,19 @@ const SingleAnalysisPageBase = () => {
 				<div className="mb-4">
 					<h2 className="text-lg font-semibold mb-2">Upload PDF</h2>
 					<p className="text-gray-600">
-						Select a PDF file to analyze its content and get detailed feedback
+						Select a PDF file to analyze its content and receive feedback
 					</p>
 				</div>
 
 				<FileHandler
 					mode="single"
-					onResult={setResult}
+					onResult={handleResult}
 					onLoadingChange={setIsSubmitting}
 				/>
 			</div>
 
 			{result && (
-				<div className="mt-8 bg-white rounded-lg shadow-md p-6">
-					<h2 className="text-lg font-semibold mb-4">Analysis Results</h2>
+				<div className="mt-8">
 					<ResultPreview response={result} />
 				</div>
 			)}

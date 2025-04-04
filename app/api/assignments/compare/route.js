@@ -5,13 +5,8 @@ import { createPartFromUri, GoogleGenAI } from "@google/genai";
 import { connectDB } from "@/lib/db";
 import Assignment from "@/models/Assignment";
 import User from "@/models/User";
-import crypto from 'crypto';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
-function generateFileHash(file) {
-	return crypto.createHash('sha256').update(file.name + file.size + file.type).digest('hex');
-}
 
 async function uploadPDF(file, displayName) {
 	const uploadedFile = await ai.files.upload({
@@ -23,18 +18,18 @@ async function uploadPDF(file, displayName) {
 
 	// Wait for the file to be processed
 	let getFile = await ai.files.get({ name: uploadedFile.name });
-	while (getFile.state === 'PROCESSING') {
+	while (getFile.state === "PROCESSING") {
 		getFile = await ai.files.get({ name: uploadedFile.name });
 		console.log(`current file status: ${getFile.state}`);
-		console.log('File is still processing, retrying in 5 seconds');
+		console.log("File is still processing, retrying in 5 seconds");
 
 		await new Promise((resolve) => {
 			setTimeout(resolve, 5000);
 		});
 	}
 
-	if (getFile.state === 'FAILED') {
-		throw new Error('File processing failed.');
+	if (getFile.state === "FAILED") {
+		throw new Error("File processing failed.");
 	}
 
 	return getFile;
@@ -55,10 +50,7 @@ export async function POST(request) {
 		// Find the user
 		const user = await User.findOne({ email: session.user.email });
 		if (!user) {
-			return NextResponse.json(
-				{ error: "User not found" },
-				{ status: 401 }
-			);
+			return NextResponse.json({ error: "User not found" }, { status: 401 });
 		}
 
 		const formData = await request.formData();
@@ -112,44 +104,45 @@ Similar Sections:
 Recommendation:
 [Your final recommendation]
 
-Please be thorough but concise in your analysis.`
+Please be thorough but concise in your analysis.`,
 		];
 
 		// Upload and process both PDFs
 		const uploadedFile1 = await uploadPDF(file1, "PDF 1");
 		if (uploadedFile1.uri && uploadedFile1.mimeType) {
-			const fileContent1 = createPartFromUri(uploadedFile1.uri, uploadedFile1.mimeType);
+			const fileContent1 = createPartFromUri(
+				uploadedFile1.uri,
+				uploadedFile1.mimeType
+			);
 			content.push(fileContent1);
 		}
 
 		const uploadedFile2 = await uploadPDF(file2, "PDF 2");
 		if (uploadedFile2.uri && uploadedFile2.mimeType) {
-			const fileContent2 = createPartFromUri(uploadedFile2.uri, uploadedFile2.mimeType);
+			const fileContent2 = createPartFromUri(
+				uploadedFile2.uri,
+				uploadedFile2.mimeType
+			);
 			content.push(fileContent2);
 		}
 
 		// Generate content with Gemini
 		const response = await ai.models.generateContent({
-			model: 'gemini-1.5-flash',
+			model: "gemini-1.5-flash",
 			contents: content,
 		});
 
 		const analysis = response.text;
 		const similarityScore = extractSimilarityScore(analysis);
-      
+
 		// Save comparison results to database
 		const comparison = new Assignment({
 			userId: user._id,
 			title: `Comparison: ${file1.name} vs ${file2.name}`,
 			content: analysis,
 			originalFileName: `${file1.name},${file2.name}`,
-			fileHash: generateFileHash(file1) + generateFileHash(file2),
-			plagiarismScore: similarityScore,
-			crossComparisonResults: [{
-				comparedWithId: null,
-				similarityScore: similarityScore,
-				sharedSegments: []
-			}]
+			feedback: analysis,
+			similarityScore: similarityScore,
 		});
 
 		await comparison.save();
@@ -162,14 +155,14 @@ Please be thorough but concise in your analysis.`
 				file1Name: file1.name,
 				file2Name: file2.name,
 			},
-			feedback: analysis
+			feedback: analysis,
 		};
 		return NextResponse.json(formattedResponse);
 	} catch (error) {
 		console.error("Error comparing PDFs:", error);
-		
+
 		// Handle specific error types
-		if (error.message.includes('processing failed')) {
+		if (error.message.includes("processing failed")) {
 			return NextResponse.json(
 				{ error: "Failed to process PDF files. Please check the file format." },
 				{ status: 400 }
@@ -186,4 +179,4 @@ Please be thorough but concise in your analysis.`
 function extractSimilarityScore(analysis) {
 	const match = analysis.match(/Similarity Score:\s*(\d+)%/);
 	return match ? parseInt(match[1]) : 0;
-} 
+}

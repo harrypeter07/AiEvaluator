@@ -94,6 +94,7 @@ export async function GET(req) {
 			alternateLink: sub.alternateLink,
 			courseWorkType: sub.courseWorkType,
 			attachments: sub.assignmentSubmission?.attachments || [],
+			feedback: sub.feedback?.text || null, // Add feedback from Google Classroom
 		}));
 
 		return NextResponse.json(

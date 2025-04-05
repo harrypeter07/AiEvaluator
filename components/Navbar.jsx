@@ -10,19 +10,19 @@ export default function Navbar() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 
 	return (
-		<nav className="fixed top-0 right-0 left-0 z-50 shadow-lg backdrop-blur-md bg-white/75">
+		<nav className="fixed top-0 right-0 left-0 z-50 shadow-lg bg-gradient-to-r from-blue-800 via-blue-900 to-blue-800">
 			<div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
 				<div className="flex justify-between h-16">
 					<div className="flex flex-shrink-0 items-center">
-						<Link href="/" className="flex items-center space-x-2">
+						<Link href="/" className="flex items-center space-x-2 group">
 							<Image
-								src="/logo.png"
+								src="/logo3.png"
 								alt="AiEvaluator Logo"
 								width={40}
 								height={40}
-								className="rounded-full"
+								className="rounded-full transition-all duration-300 group-hover:scale-110 shadow-lg"
 							/>
-							<span className="text-2xl font-bold text-teal-600">
+							<span className="text-xl md:text-2xl font-bold text-white transition-all duration-300 group-hover:text-blue-200">
 								AiEvaluator
 							</span>
 						</Link>
@@ -30,19 +30,19 @@ export default function Navbar() {
 					<div className="hidden sm:flex sm:items-center sm:space-x-8">
 						<Link
 							href="/dashboard"
-							className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 transition-colors hover:text-teal-600"
+							className="inline-flex items-center px-3 py-1 text-sm font-medium text-white transition-all duration-300 border-b-2 border-transparent hover:border-blue-300 hover:text-blue-200 rounded-lg hover:bg-white/10"
 						>
 							Dashboard
 						</Link>
 						<Link
 							href="/classroom"
-							className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 transition-colors hover:text-teal-600"
+							className="inline-flex items-center px-3 py-1 text-sm font-medium text-white transition-all duration-300 border-b-2 border-transparent hover:border-blue-300 hover:text-blue-200 rounded-lg hover:bg-white/10"
 						>
 							Classroom
 						</Link>
 						<Link
 							href="/about"
-							className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 transition-colors hover:text-teal-600"
+							className="inline-flex items-center px-3 py-1 text-sm font-medium text-white transition-all duration-300 border-b-2 border-transparent hover:border-blue-300 hover:text-blue-200 rounded-lg hover:bg-white/10"
 						>
 							About Us
 						</Link>
@@ -50,7 +50,7 @@ export default function Navbar() {
 					<div className="flex items-center -mr-2 sm:hidden">
 						<button
 							onClick={() => setIsMenuOpen(!isMenuOpen)}
-							className="inline-flex justify-center items-center p-2 text-gray-400 rounded-md hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500"
+							className="inline-flex justify-center items-center p-2 text-white rounded-md hover:text-blue-200 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-300 transition-all duration-300"
 						>
 							<span className="sr-only">Open main menu</span>
 							{!isMenuOpen ? (
@@ -90,25 +90,29 @@ export default function Navbar() {
 			</div>
 
 			{/* Mobile menu */}
-			<div className={`${isMenuOpen ? "block" : "hidden"} sm:hidden`}>
+			<div
+				className={`${
+					isMenuOpen ? "block" : "hidden"
+				} sm:hidden bg-gradient-to-b from-blue-800 to-blue-900`}
+			>
 				<div className="pt-2 pb-3 space-y-1">
 					<Link
 						href="/dashboard"
-						className="block py-2 pr-4 pl-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+						className="block py-2 pr-4 pl-3 text-base font-medium text-white hover:text-blue-200 hover:bg-white/10 transition-all duration-300"
 						onClick={() => setIsMenuOpen(false)}
 					>
 						Dashboard
 					</Link>
 					<Link
 						href="/classroom"
-						className="block py-2 pr-4 pl-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+						className="block py-2 pr-4 pl-3 text-base font-medium text-white hover:text-blue-200 hover:bg-white/10 transition-all duration-300"
 						onClick={() => setIsMenuOpen(false)}
 					>
 						Classroom
 					</Link>
 					<Link
 						href="/about"
-						className="block py-2 pr-4 pl-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+						className="block py-2 pr-4 pl-3 text-base font-medium text-white hover:text-blue-200 hover:bg-white/10 transition-all duration-300"
 						onClick={() => setIsMenuOpen(false)}
 					>
 						About Us

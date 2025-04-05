@@ -2,39 +2,39 @@
 
 export default function AboutUs() {
 	return (
-		<div className="px-4 py-12 min-h-screen bg-teal-custom sm:px-6 lg:px-8">
+		<div className="min-h-screen px-4 py-12 bg-teal-custom sm:px-6 lg:px-8">
 			<div className="mx-auto max-w-7xl">
 				<div className="mb-16 text-center">
 					<h1 className="text-4xl font-bold text-gray-900 sm:text-5xl">
-						About MainAI
+						About AI Evaluator
 					</h1>
 					<p className="mt-4 text-xl text-gray-500">
 						Revolutionizing education through intelligent assignment evaluation
 					</p>
 				</div>
 
-				<div className="grid grid-cols-1 gap-12 items-center mb-20 md:grid-cols-2">
+				<div className="grid items-center grid-cols-1 gap-12 mb-20 md:grid-cols-2">
 					<div>
 						<h2 className="mb-6 text-3xl font-bold text-gray-900">
 							Our Mission
 						</h2>
 						<p className="mb-6 text-lg text-gray-600">
-							MainAI is dedicated to transforming the educational landscape by
-							leveraging cutting-edge AI technology to make assignment
-							evaluation more efficient, consistent, and insightful for
-							educators and students alike.
+							AI Evaluator is dedicated to transforming the educational
+							landscape by leveraging cutting-edge AI technology to make
+							assignment evaluation more efficient, consistent, and insightful
+							for educators and students alike.
 						</p>
 						<p className="text-lg text-gray-600">
 							We believe in creating tools that not only save time but also
 							provide valuable feedback that helps students grow and improve.
 						</p>
 					</div>
-					<div className="p-8 text-white bg-gradient-to-r from-teal-500 to-blue-500 rounded-lg shadow-xl">
+					<div className="p-8 text-white rounded-lg shadow-xl bg-gradient-to-r from-teal-500 to-blue-500">
 						<h3 className="mb-6 text-2xl font-semibold">Key Features</h3>
 						<ul className="space-y-4">
 							<li className="flex items-center">
 								<svg
-									className="mr-3 w-6 h-6"
+									className="w-6 h-6 mr-3"
 									fill="none"
 									stroke="currentColor"
 									viewBox="0 0 24 24"
@@ -50,7 +50,7 @@ export default function AboutUs() {
 							</li>
 							<li className="flex items-center">
 								<svg
-									className="mr-3 w-6 h-6"
+									className="w-6 h-6 mr-3"
 									fill="none"
 									stroke="currentColor"
 									viewBox="0 0 24 24"
@@ -66,7 +66,7 @@ export default function AboutUs() {
 							</li>
 							<li className="flex items-center">
 								<svg
-									className="mr-3 w-6 h-6"
+									className="w-6 h-6 mr-3"
 									fill="none"
 									stroke="currentColor"
 									viewBox="0 0 24 24"
@@ -82,7 +82,7 @@ export default function AboutUs() {
 							</li>
 							<li className="flex items-center">
 								<svg
-									className="mr-3 w-6 h-6"
+									className="w-6 h-6 mr-3"
 									fill="none"
 									stroke="currentColor"
 									viewBox="0 0 24 24"
@@ -102,11 +102,11 @@ export default function AboutUs() {
 
 				<div className="p-8 mb-20 bg-white rounded-lg shadow-lg">
 					<h2 className="mb-8 text-3xl font-bold text-center text-gray-900">
-						Why Choose MainAI?
+						Why Choose AI Evaluator?
 					</h2>
 					<div className="grid grid-cols-1 gap-8 md:grid-cols-3">
 						<div className="text-center">
-							<div className="flex justify-center items-center p-4 mx-auto mb-4 w-16 h-16 bg-teal-100 rounded-full">
+							<div className="flex items-center justify-center w-16 h-16 p-4 mx-auto mb-4 bg-teal-100 rounded-full">
 								<svg
 									className="w-8 h-8 text-teal-600"
 									fill="none"
@@ -122,14 +122,15 @@ export default function AboutUs() {
 								</svg>
 							</div>
 							<h3 className="mb-2 text-xl font-semibold text-gray-900">
-								Fast & Efficient
+								Smart & Efficient
 							</h3>
 							<p className="text-gray-600">
-								Reduce grading time by up to 70% while maintaining accuracy
+								Advanced AI-powered grading that reduces evaluation time by up
+								to 70%
 							</p>
 						</div>
 						<div className="text-center">
-							<div className="flex justify-center items-center p-4 mx-auto mb-4 w-16 h-16 bg-teal-100 rounded-full">
+							<div className="flex items-center justify-center w-16 h-16 p-4 mx-auto mb-4 bg-teal-100 rounded-full">
 								<svg
 									className="w-8 h-8 text-teal-600"
 									fill="none"
@@ -145,14 +146,15 @@ export default function AboutUs() {
 								</svg>
 							</div>
 							<h3 className="mb-2 text-xl font-semibold text-gray-900">
-								Reliable & Secure
+								Secure & Reliable
 							</h3>
 							<p className="text-gray-600">
-								Enterprise-grade security for your educational data
+								State-of-the-art security ensuring your academic data is
+								protected
 							</p>
 						</div>
 						<div className="text-center">
-							<div className="flex justify-center items-center p-4 mx-auto mb-4 w-16 h-16 bg-teal-100 rounded-full">
+							<div className="flex items-center justify-center w-16 h-16 p-4 mx-auto mb-4 bg-teal-100 rounded-full">
 								<svg
 									className="w-8 h-8 text-teal-600"
 									fill="none"
@@ -168,10 +170,10 @@ export default function AboutUs() {
 								</svg>
 							</div>
 							<h3 className="mb-2 text-xl font-semibold text-gray-900">
-								Always Improving
+								Continuous Learning
 							</h3>
 							<p className="text-gray-600">
-								Continuous updates and improvements based on user feedback
+								Our AI system evolves and improves with each evaluation
 							</p>
 						</div>
 					</div>
@@ -179,13 +181,13 @@ export default function AboutUs() {
 
 				<div className="text-center">
 					<h2 className="mb-8 text-3xl font-bold text-gray-900">
-						Ready to Transform Your Teaching?
+						Ready to Transform Your Assessment Process?
 					</h2>
 					<a
 						href="/signup"
-						className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-teal-600 rounded-md border border-transparent transition-colors hover:bg-teal-700"
+						className="inline-flex items-center px-6 py-3 text-base font-medium text-white transition-colors bg-teal-600 border border-transparent rounded-md hover:bg-teal-700"
 					>
-						Get Started Today
+						Start Using AI Evaluator
 					</a>
 				</div>
 			</div>

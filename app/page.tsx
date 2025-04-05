@@ -22,7 +22,6 @@ export default function Home() {
 			text: "AI",
 			className: "text-red-600",
 		},
-		
 	];
 
 	return (
@@ -30,7 +29,7 @@ export default function Home() {
 			<div className="absolute inset-0 overflow-hidden">
 				<div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.3),rgba(255,255,255,0))]" />
 			</div>
-			<p className="relative mb-2 text-sm font-light text-gray-600 sm:mb-4 sm:text-lg dark:text-gray-200 animate-fade-in">
+			<p className="relative mb-4 text-xl font-bold text-gray-700 sm:mb-6 sm:text-2xl md:text-3xl dark:text-gray-200 animate-fade-in">
 				The future of assignment evaluation starts here
 			</p>
 			<div className="relative max-w-3xl px-4">

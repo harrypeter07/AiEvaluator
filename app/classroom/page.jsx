@@ -79,37 +79,56 @@ export default function Classroom() {
 					</div>
 				) : (
 					<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-						{courses.map((course) => (
-							<Link
-								key={course.id}
-								href={`/classroom/${course.id}`}
-								className="block group"
-							>
-								<div className="p-6 bg-white rounded-lg shadow-md transition-shadow duration-200 hover:shadow-lg">
-									<div className="flex justify-between items-center">
-										<h3 className="text-lg font-semibold text-gray-900 transition-colors group-hover:text-blue-600">
-											{course.name}
-										</h3>
-										<svg
-											className="w-5 h-5 text-gray-400 transition-colors group-hover:text-blue-500"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M9 5l7 7-7 7"
-											/>
-										</svg>
+						{courses.map((course, index) => {
+							const gradientClasses = [
+								
+								"bg-gradient-to-r from-blue-500 to-teal-400",
+								
+								"bg-gradient-to-r from-green-400 to-emerald-600",
+								"bg-gradient-to-r from-indigo-500 to-purple-500",
+								"bg-gradient-to-r from-red-500 to-pink-500",
+							];
+							const gradientClass =
+								gradientClasses[index % gradientClasses.length];
+
+							return (
+								<Link
+									key={course.id}
+									href={`/classroom/${course.id}`}
+									className="block transition-all duration-300 transform group hover:scale-105"
+								>
+									<div className="overflow-hidden relative rounded-lg border-2 border-white shadow-lg transition-all duration-300 hover:shadow-2xl">
+										{/* Gradient Background */}
+										<div className={`absolute inset-0 ${gradientClass}`}></div>
+
+										{/* Card Content */}
+										<div className="relative z-10 p-6">
+											<div className="flex justify-between items-center">
+												<h3 className="text-lg font-semibold text-white group-hover:text-white">
+													{course.name}
+												</h3>
+												<svg
+													className="w-5 h-5 text-white transition-colors group-hover:text-white"
+													fill="none"
+													stroke="currentColor"
+													viewBox="0 0 24 24"
+												>
+													<path
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														strokeWidth={2}
+														d="M9 5l7 7-7 7"
+													/>
+												</svg>
+											</div>
+											<p className="mt-2 text-sm text-white">
+												Course ID: {course.id}
+											</p>
+										</div>
 									</div>
-									<p className="mt-2 text-sm text-gray-500">
-										Course ID: {course.id}
-									</p>
-								</div>
-							</Link>
-						))}
+								</Link>
+							);
+						})}
 					</div>
 				)}
 			</div>

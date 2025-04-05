@@ -54,6 +54,68 @@ npm >= 9.0.0
 MongoDB >= 6.0
 ```
 
+### Environment Setup
+
+1. **Google Cloud Setup**
+
+```bash
+# Create a Google Cloud Project
+# Enable required APIs:
+- Google Classroom API
+- Google Drive API
+- Google OAuth 2.0
+```
+
+2. **Create Environment File**
+
+```bash
+# .env file configuration
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_client_id
+NEXT_PUBLIC_GOOGLE_CLIENT_SECRET=your_client_secret
+MONGODB_URI=your_mongodb_connection_string
+GEMINI_API_KEY=your_gemini_api_key
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_nextauth_secret
+
+# Optional configurations
+NODE_ENV=development
+PORT=3000
+```
+
+3. **MongoDB Setup**
+
+```bash
+# Local Development
+- Install MongoDB Community Edition
+- Start MongoDB service
+- Create a new database
+
+# OR use MongoDB Atlas
+- Create free cluster
+- Get connection string
+- Add IP to allowlist
+```
+
+4. **Google Credentials**
+
+```bash
+# Google Cloud Console Steps
+1. Create OAuth 2.0 credentials
+2. Add authorized redirect URIs:
+   - http://localhost:3000/api/auth/callback/google
+   - https://yourdomain.com/api/auth/callback/google
+3. Download client configuration
+```
+
+5. **Gemini API Setup**
+
+```bash
+# Google AI Studio
+1. Create API key
+2. Set usage quotas
+3. Enable required models
+```
+
 ### Installation
 
 1. Clone the repository
@@ -155,13 +217,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👥 Team
 
-- [Developer Name] - Lead Developer
-- [Designer Name] - UI/UX Designer
-- [Your Name] - Project Manager
+- Hassan Mansuri - Lead Developer
+- Samiksha Gaiki - UI/UX Designer
+
 
 ## 📞 Support
 
-For support, email support@aievaluator.com or join our Discord channel.
+For support, email hassanmansuri570@gmail.com
 
 ---
 

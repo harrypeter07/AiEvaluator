@@ -25,6 +25,29 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
 	title: "AiEvaluator - Smart Assignment Evaluation",
 	description: "AI-powered assignment evaluation and feedback system",
+	icons: {
+		icon: "/logo.png",
+		shortcut: "/logo.png",
+		apple: "/logo.png",
+	},
+	openGraph: {
+		title: "AiEvaluator - Smart Assignment Evaluation",
+		description: "AI-powered assignment evaluation and feedback system",
+		images: [
+			{
+				url: "/logo.png",
+				width: 800,
+				height: 800,
+				alt: "AiEvaluator Logo",
+			},
+		],
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: "AiEvaluator - Smart Assignment Evaluation",
+		description: "AI-powered assignment evaluation and feedback system",
+		images: ["/logo.png"],
+	},
 };
 
 export default function RootLayout({

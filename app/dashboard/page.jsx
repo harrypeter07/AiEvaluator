@@ -40,9 +40,9 @@ const DashboardBase = () => {
 
 	if (status === "loading") {
 		return (
-			<div className="flex items-center justify-center h-screen">
+			<div className="flex justify-center items-center h-screen">
 				<div className="text-center">
-					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+					<div className="mx-auto mb-4 w-12 h-12 rounded-full border-b-2 border-blue-500 animate-spin"></div>
 					<div className="text-xl text-gray-600">Loading dashboard...</div>
 				</div>
 			</div>
@@ -50,7 +50,7 @@ const DashboardBase = () => {
 	}
 
 	return (
-		<div className="max-w-6xl mx-auto p-6">
+		<div className="p-6 mx-auto max-w-6xl">
 			<div className="flex justify-between items-center mb-6">
 				<div>
 					<h1 className="text-2xl font-bold">Assignment Checker Dashboard</h1>
@@ -65,22 +65,22 @@ const DashboardBase = () => {
 				</div>
 				<button
 					onClick={handleLogout}
-					className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+					className="px-4 py-2 text-white bg-red-500 rounded-lg transition-colors hover:bg-red-600"
 				>
 					Logout
 				</button>
 			</div>
 
-			<div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+			<div className="grid grid-cols-1 gap-6 mt-8 md:grid-cols-2">
 				<Link href="/dashboard/single" className="block">
-					<div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer">
-						<h2 className="text-xl font-semibold mb-4">Single Analysis</h2>
-						<p className="text-gray-600 mb-4">
+					<div className="p-6 bg-white rounded-lg shadow-md transition-shadow cursor-pointer hover:shadow-lg">
+						<h2 className="mb-4 text-xl font-semibold">Single Analysis</h2>
+						<p className="mb-4 text-gray-600">
 							Upload and analyze a single PDF file to get detailed feedback on
 							the content.
 						</p>
 						<div className="flex justify-end">
-							<div className="bg-blue-500 text-white px-4 py-2 rounded">
+							<div className="px-4 py-2 text-white bg-blue-500 rounded">
 								Go to Single Analysis
 							</div>
 						</div>
@@ -88,14 +88,14 @@ const DashboardBase = () => {
 				</Link>
 
 				<Link href="/dashboard/compare" className="block">
-					<div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer">
-						<h2 className="text-xl font-semibold mb-4">Compare PDFs</h2>
-						<p className="text-gray-600 mb-4">
+					<div className="p-6 bg-white rounded-lg shadow-md transition-shadow cursor-pointer hover:shadow-lg">
+						<h2 className="mb-4 text-xl font-semibold">Compare PDFs</h2>
+						<p className="mb-4 text-gray-600">
 							Upload two PDF files to compare them and check for similarities or
 							plagiarism.
 						</p>
 						<div className="flex justify-end">
-							<div className="bg-blue-500 text-white px-4 py-2 rounded">
+							<div className="px-4 py-2 text-white bg-blue-500 rounded">
 								Go to Compare PDFs
 							</div>
 						</div>

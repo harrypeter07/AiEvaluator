@@ -39,7 +39,92 @@ export default function Home() {
 					cursorClassName="bg-blue-600"
 				/>
 			</div>
-			<div className="relative flex flex-col mt-4 space-y-4 sm:flex-row sm:mt-8 sm:space-y-0 sm:space-x-4">
+
+			{/* Feature Highlights */}
+			<div className="relative max-w-4xl px-6 mt-8">
+				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+					<div className="p-6 shadow-lg bg-white/90 rounded-xl backdrop-blur-sm">
+						<div className="mb-4 text-blue-600">
+							<svg
+								className="w-8 h-8"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+								/>
+							</svg>
+						</div>
+						<h3 className="mb-2 text-lg font-semibold">Batch Evaluation</h3>
+						<p className="text-gray-600">
+							Evaluate all student submissions with just one click. Save hours
+							of manual grading time.
+						</p>
+					</div>
+
+					<div className="p-6 shadow-lg bg-white/90 rounded-xl backdrop-blur-sm">
+						<div className="mb-4 text-purple-600">
+							<svg
+								className="w-8 h-8"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
+								/>
+							</svg>
+						</div>
+						<h3 className="mb-2 text-lg font-semibold">
+							Personalized Feedback
+						</h3>
+						<p className="text-gray-600">
+							AI-powered detailed feedback for each student, focusing on their
+							unique strengths and areas for improvement.
+						</p>
+					</div>
+
+					<div className="p-6 shadow-lg bg-white/90 rounded-xl backdrop-blur-sm">
+						<div className="mb-4 text-pink-600">
+							<svg
+								className="w-8 h-8"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+								/>
+							</svg>
+						</div>
+						<h3 className="mb-2 text-lg font-semibold">Smart Analytics</h3>
+						<p className="text-gray-600">
+							Track student progress, identify patterns, and get insights to
+							improve teaching effectiveness.
+						</p>
+					</div>
+				</div>
+
+				<div className="mt-8 text-center">
+					<p className="max-w-2xl mx-auto mb-4 text-lg text-gray-600">
+						Empowering educators to focus on what matters most - teaching and
+						mentoring. Our AI assistant handles the grading while maintaining
+						high standards of assessment quality.
+					</p>
+				</div>
+			</div>
+
+			<div className="relative flex flex-col mt-8 space-y-4 sm:flex-row sm:mt-8 sm:space-y-0 sm:space-x-4">
 				<button
 					onClick={() => router.push("/dashboard")}
 					className="w-40 h-12 text-sm text-white transition-all duration-300 border border-transparent bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl dark:border-white hover:scale-105 hover:shadow-lg hover:from-indigo-600 hover:to-blue-600"

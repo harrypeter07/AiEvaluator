@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 
@@ -13,8 +14,17 @@ export default function Navbar() {
 			<div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
 				<div className="flex justify-between h-16">
 					<div className="flex flex-shrink-0 items-center">
-						<Link href="/" className="text-2xl font-bold text-teal-600">
-							AiEvaluator
+						<Link href="/" className="flex items-center space-x-2">
+							<Image
+								src="/logo.png"
+								alt="AiEvaluator Logo"
+								width={40}
+								height={40}
+								className="rounded-full"
+							/>
+							<span className="text-2xl font-bold text-teal-600">
+								AiEvaluator
+							</span>
 						</Link>
 					</div>
 					<div className="hidden sm:flex sm:items-center sm:space-x-8">

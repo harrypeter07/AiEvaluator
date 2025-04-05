@@ -14,14 +14,14 @@ import { ErrorBoundary } from "react-error-boundary";
 import dynamic from "next/dynamic";
 
 const ErrorFallback = ({ error, resetErrorBoundary }) => (
-	<div className="bg-red-50 border border-red-200 rounded-lg p-6 shadow-md">
-		<h3 className="text-xl font-semibold text-red-800 mb-2">
+	<div className="p-6 bg-red-50 rounded-lg border border-red-200 shadow-md">
+		<h3 className="mb-2 text-xl font-semibold text-red-800">
 			Something went wrong:
 		</h3>
-		<p className="text-red-600 mb-4">{error.message}</p>
+		<p className="mb-4 text-red-600">{error.message}</p>
 		<button
 			onClick={resetErrorBoundary}
-			className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+			className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700"
 		>
 			Try again
 		</button>
@@ -141,14 +141,14 @@ const ResultPreviewBase = ({ response }) => {
 
 	if (error) {
 		return (
-			<div className="bg-red-50 border border-red-200 rounded-lg p-6 shadow-md">
-				<h3 className="text-xl font-semibold text-red-800 mb-2">
+			<div className="p-6 bg-red-50 rounded-lg border border-red-200 shadow-md">
+				<h3 className="mb-2 text-xl font-semibold text-red-800">
 					Something went wrong:
 				</h3>
-				<p className="text-red-600 mb-4">{error}</p>
+				<p className="mb-4 text-red-600">{error}</p>
 				<button
 					onClick={() => setError(null)}
-					className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+					className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700"
 				>
 					Try again
 				</button>
@@ -158,7 +158,7 @@ const ResultPreviewBase = ({ response }) => {
 
 	if (!parsedSections) {
 		return (
-			<div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 shadow-md">
+			<div className="p-6 bg-yellow-50 rounded-lg border border-yellow-200 shadow-md">
 				<p className="text-yellow-600">No results to display</p>
 			</div>
 		);
@@ -186,20 +186,23 @@ const ResultPreviewBase = ({ response }) => {
 	};
 
 	return (
-		<div ref={resultRef} className="bg-white rounded-lg shadow-lg p-8 mt-6">
-			<div className="flex justify-end space-x-4 mb-6">
+		<div
+			ref={resultRef}
+			className="bg-white rounded-lg shadow-lg p-8 mt-6 border border-gray-300 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]"
+		>
+			<div className="flex justify-end mb-6 space-x-4">
 				<button
 					onClick={handleDownload}
-					className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+					className="flex items-center px-4 py-2 text-white bg-blue-500 rounded transition-colors hover:bg-blue-600"
 				>
-					<Download className="w-4 h-4 mr-2" />
+					<Download className="mr-2 w-4 h-4" />
 					Download PDF
 				</button>
 				<button
 					onClick={handlePrint}
-					className="flex items-center px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+					className="flex items-center px-4 py-2 text-white bg-gray-500 rounded transition-colors hover:bg-gray-600"
 				>
-					<Printer className="w-4 h-4 mr-2" />
+					<Printer className="mr-2 w-4 h-4" />
 					Print
 				</button>
 			</div>
@@ -208,7 +211,7 @@ const ResultPreviewBase = ({ response }) => {
 				{/* Student Information */}
 				{parsedSections.studentInfo && (
 					<div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-						<h3 className="text-lg font-semibold text-blue-800 mb-2">
+						<h3 className="mb-2 text-lg font-semibold text-blue-800">
 							Student Information
 						</h3>
 						<p className="text-blue-700 whitespace-pre-line">
@@ -220,7 +223,7 @@ const ResultPreviewBase = ({ response }) => {
 				{/* Keywords/Topics */}
 				{parsedSections.keywords && (
 					<div className="p-4 bg-green-50 rounded-lg border border-green-200">
-						<h3 className="text-lg font-semibold text-green-800 mb-2">
+						<h3 className="mb-2 text-lg font-semibold text-green-800">
 							Keywords/Topics
 						</h3>
 						<p className="text-green-700 whitespace-pre-line">
@@ -232,7 +235,7 @@ const ResultPreviewBase = ({ response }) => {
 				{/* Overall Assessment */}
 				{parsedSections.assessment && (
 					<div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
-						<h3 className="text-lg font-semibold text-purple-800 mb-2">
+						<h3 className="mb-2 text-lg font-semibold text-purple-800">
 							Overall Assessment
 						</h3>
 						<p className="text-purple-700 whitespace-pre-line">
@@ -244,7 +247,7 @@ const ResultPreviewBase = ({ response }) => {
 				{/* Detailed Feedback */}
 				{parsedSections.feedback && (
 					<div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-						<h3 className="text-lg font-semibold text-yellow-800 mb-2">
+						<h3 className="mb-2 text-lg font-semibold text-yellow-800">
 							Detailed Feedback
 						</h3>
 						<p className="text-yellow-700 whitespace-pre-line">
@@ -256,7 +259,7 @@ const ResultPreviewBase = ({ response }) => {
 				{/* Score */}
 				{parsedSections.score && (
 					<div className="p-4 bg-pink-50 rounded-lg border border-pink-200">
-						<div className="flex items-center justify-between">
+						<div className="flex justify-between items-center">
 							<div className="flex items-center">
 								{getScoreIcon(parsedSections.score)}
 								<h3 className="ml-2 text-lg font-semibold text-pink-800">
@@ -277,7 +280,7 @@ const ResultPreviewBase = ({ response }) => {
 				{/* Justification */}
 				{parsedSections.justification && (
 					<div className="p-4 bg-teal-50 rounded-lg border border-teal-200">
-						<h3 className="text-lg font-semibold text-teal-800 mb-2">
+						<h3 className="mb-2 text-lg font-semibold text-teal-800">
 							Score Justification
 						</h3>
 						<p className="text-teal-700 whitespace-pre-line">

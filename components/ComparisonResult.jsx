@@ -87,7 +87,7 @@ const ComparisonResultBase = ({ response }) => {
 		// 	jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
 		// };
 		// await html2pdf().set(opt).from(element).save();
-        alert("donwloadddddd")
+		alert("donwloadddddd");
 	};
 
 	if (!mounted || !sections) {
@@ -97,7 +97,7 @@ const ComparisonResultBase = ({ response }) => {
 	return (
 		<div
 			ref={resultRef}
-			className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg"
+			className="p-6 mx-auto max-w-4xl bg-white rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.01] border border-gray-300"
 		>
 			<div className="flex justify-between items-center mb-6">
 				<h2 className="text-2xl font-bold text-gray-800">
@@ -105,16 +105,16 @@ const ComparisonResultBase = ({ response }) => {
 				</h2>
 				<button
 					onClick={handleDownload}
-					className="flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+					className="flex items-center px-4 py-2 text-white bg-blue-500 rounded border border-blue-600 transition-all duration-300 transform hover:bg-blue-600 hover:scale-105"
 				>
-					<Download className="w-4 h-4 mr-2" />
+					<Download className="mr-2 w-4 h-4" />
 					Download Report
 				</button>
 			</div>
 
 			{/* File Names */}
-			<div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-				<h3 className="text-lg font-semibold text-gray-700 mb-2">
+			<div className="p-4 mb-6 bg-gray-50 rounded-lg border border-gray-200 transition-all duration-300 hover:shadow-md">
+				<h3 className="mb-2 text-lg font-semibold text-gray-700">
 					Files Compared
 				</h3>
 				<div className="grid grid-cols-2 gap-4">
@@ -130,8 +130,8 @@ const ComparisonResultBase = ({ response }) => {
 			</div>
 
 			{/* Similarity Score Card */}
-			<div className="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
-				<div className="flex items-center justify-between">
+			<div className="p-6 mb-8 bg-gray-50 rounded-lg border border-gray-200 transition-all duration-300 hover:shadow-md">
+				<div className="flex justify-between items-center">
 					<div className="flex items-center">
 						{getSimilarityIcon(similarityScore)}
 						<h3 className="ml-3 text-xl font-semibold text-gray-800">
@@ -139,9 +139,7 @@ const ComparisonResultBase = ({ response }) => {
 						</h3>
 					</div>
 					<div
-						className={`text-4xl font-bold ${getSimilarityColor(
-							similarityScore
-						)}`}
+						className={`text-4xl font-bold ${getSimilarityColor( similarityScore )}`}
 					>
 						{similarityScore}%
 					</div>
@@ -150,10 +148,10 @@ const ComparisonResultBase = ({ response }) => {
 
 			{/* Detailed Analysis */}
 			<div className="mb-8">
-				<h3 className="text-xl font-semibold text-gray-800 mb-4">
+				<h3 className="mb-4 text-xl font-semibold text-gray-800">
 					Detailed Analysis
 				</h3>
-				<div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+				<div className="p-6 bg-blue-50 rounded-lg border border-blue-200 transition-all duration-300 hover:shadow-md">
 					<p className="text-gray-700 whitespace-pre-line">
 						{sections.detailedAnalysis?.join("\n")}
 					</p>
@@ -163,10 +161,10 @@ const ComparisonResultBase = ({ response }) => {
 			{/* Similar Sections */}
 			{sections.similarSections && sections.similarSections.length > 0 && (
 				<div className="mb-8">
-					<h3 className="text-xl font-semibold text-gray-800 mb-4">
+					<h3 className="mb-4 text-xl font-semibold text-gray-800">
 						Similar Sections
 					</h3>
-					<div className="bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+					<div className="p-6 bg-yellow-50 rounded-lg border border-yellow-200 transition-all duration-300 hover:shadow-md">
 						<p className="text-gray-700 whitespace-pre-line">
 							{sections.similarSections.join("\n")}
 						</p>
@@ -177,10 +175,10 @@ const ComparisonResultBase = ({ response }) => {
 			{/* Recommendations */}
 			{sections.recommendation && sections.recommendation.length > 0 && (
 				<div className="mb-8">
-					<h3 className="text-xl font-semibold text-gray-800 mb-4">
+					<h3 className="mb-4 text-xl font-semibold text-gray-800">
 						Recommendations
 					</h3>
-					<div className="bg-green-50 p-6 rounded-lg border border-green-200">
+					<div className="p-6 bg-green-50 rounded-lg border border-green-200 transition-all duration-300 hover:shadow-md">
 						<p className="text-gray-700 whitespace-pre-line">
 							{sections.recommendation.join("\n")}
 						</p>

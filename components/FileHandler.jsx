@@ -9,11 +9,11 @@ const FilePreviewBase = ({ file, previewUrl }) => {
 	if (!file) return null;
 
 	return (
-		<div className="mt-2 p-4 border rounded-lg bg-white shadow-sm">
+		<div className="p-4 mt-2 bg-white rounded-lg border border-gray-200 shadow-sm transition-all duration-300 hover:shadow-md">
 			<div className="flex items-center">
-				<div className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded">
+				<div className="flex justify-center items-center w-10 h-10 bg-gray-100 rounded-lg transition-colors duration-300 hover:bg-gray-200">
 					<svg
-						className="w-6 h-6 text-gray-500"
+						className="w-6 h-6 text-gray-500 transition-colors duration-300"
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
@@ -27,8 +27,10 @@ const FilePreviewBase = ({ file, previewUrl }) => {
 					</svg>
 				</div>
 				<div className="ml-3">
-					<p className="text-sm font-medium text-gray-900">{file.name}</p>
-					<p className="text-xs text-gray-500">
+					<p className="text-sm font-medium text-gray-900 transition-colors duration-300">
+						{file.name}
+					</p>
+					<p className="text-xs text-gray-500 transition-colors duration-300">
 						{(file.size / 1024).toFixed(2)} KB
 					</p>
 				</div>
@@ -37,7 +39,7 @@ const FilePreviewBase = ({ file, previewUrl }) => {
 						href={previewUrl}
 						target="_blank"
 						rel="noopener noreferrer"
-						className="text-sm text-blue-600 hover:text-blue-800"
+						className="text-sm text-blue-600 transition-colors duration-300 hover:text-blue-800"
 					>
 						Preview
 					</a>
@@ -310,7 +312,7 @@ const FileHandlerBase = ({ mode, onResult, onLoadingChange }) => {
 	};
 
 	return (
-		<div className="p-6 rounded-lg shadow-md">
+		<div className="p-6 rounded-lg border border-gray-300 shadow-md transition-all duration-300 hover:shadow-lg">
 			{mode === "single" && (
 				<div className="space-y-4">
 					<div>
@@ -338,7 +340,7 @@ const FileHandlerBase = ({ mode, onResult, onLoadingChange }) => {
 							type="text"
 							value={title}
 							onChange={handleSingleTitleChange}
-							className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+							className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
 							placeholder="Enter assignment title"
 						/>
 					</div>
@@ -358,14 +360,14 @@ const FileHandlerBase = ({ mode, onResult, onLoadingChange }) => {
 						{files.map((file, index) => (
 							<div key={index}>
 								<div className="mb-2">
-									<label className="block text-sm font-medium text-gray-700 mb-1">
+									<label className="block mb-1 text-sm font-medium text-gray-700">
 										Title for {file.name}
 									</label>
 									<input
 										type="text"
 										value={titles[index] || ""}
 										onChange={(e) => handleTitleChange(index, e.target.value)}
-										className="w-full px-3 py-2 border border-gray-300 rounded-md"
+										className="px-3 py-2 w-full rounded-md border border-gray-300"
 										placeholder="Enter assignment title"
 									/>
 								</div>
@@ -417,12 +419,12 @@ const FileHandlerBase = ({ mode, onResult, onLoadingChange }) => {
 				</div>
 			)}
 
-			{error && <div className="text-red-500 text-sm mt-2">{error}</div>}
+			{error && <div className="mt-2 text-sm text-red-500">{error}</div>}
 
 			<button
 				onClick={handleUpload}
 				disabled={loading}
-				className={`mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors ${
+				className={`mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-all duration-300 hover:scale-[1.02] border border-blue-600 ${
 					loading ? "opacity-50 cursor-not-allowed" : ""
 				}`}
 			>
@@ -433,8 +435,8 @@ const FileHandlerBase = ({ mode, onResult, onLoadingChange }) => {
 				<div className="mt-8">
 					{mode === "compare" ? (
 						// <ComparisonResult response={result} />
-						
-							<h1>hello</h1>
+
+						<h1>hello</h1>
 					) : (
 						<ResultPreview response={result} />
 					)}

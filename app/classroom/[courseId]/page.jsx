@@ -42,21 +42,21 @@ export default function CourseAssignments() {
 
 	if (status === "loading")
 		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+			<div className="flex justify-center items-center min-h-screen">
+				<div className="w-12 h-12 rounded-full border-t-2 border-b-2 border-blue-500 animate-spin"></div>
 			</div>
 		);
 	if (status === "unauthenticated")
 		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<div className="text-center p-8 bg-white rounded-lg shadow-md">
-					<h2 className="text-2xl font-semibold mb-4">Please Log In</h2>
-					<p className="text-gray-600 mb-4">
+			<div className="flex justify-center items-center min-h-screen">
+				<div className="p-8 text-center bg-white rounded-lg shadow-md">
+					<h2 className="mb-4 text-2xl font-semibold">Please Log In</h2>
+					<p className="mb-4 text-gray-600">
 						You need to be logged in to access your assignments.
 					</p>
 					<Link
 						href="/login"
-						className="inline-block bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+						className="inline-block px-6 py-2 text-white bg-blue-500 rounded-md transition-colors hover:bg-blue-600"
 					>
 						Go to Login
 					</Link>
@@ -65,9 +65,9 @@ export default function CourseAssignments() {
 		);
 	if (session?.provider !== "google")
 		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<div className="text-center p-8 bg-white rounded-lg shadow-md">
-					<h2 className="text-2xl font-semibold mb-4">Google Login Required</h2>
+			<div className="flex justify-center items-center min-h-screen">
+				<div className="p-8 text-center bg-white rounded-lg shadow-md">
+					<h2 className="mb-4 text-2xl font-semibold">Google Login Required</h2>
 					<p className="text-gray-600">
 						Please log in with Google to see your assignments.
 					</p>
@@ -76,9 +76,9 @@ export default function CourseAssignments() {
 		);
 
 	return (
-		<div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-			<div className="max-w-7xl mx-auto">
-				<div className="flex items-center justify-between mb-8">
+		<div className="px-4 py-8 min-h-screen bg-teal-custom sm:px-6 lg:px-8">
+			<div className="mx-auto max-w-7xl">
+				<div className="flex justify-between items-center mb-8">
 					<div>
 						<h1 className="text-3xl font-bold text-gray-900">
 							{courseDetails?.name || "Course Assignments"}
@@ -89,10 +89,10 @@ export default function CourseAssignments() {
 					</div>
 					<Link
 						href="/classroom"
-						className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+						className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-md border border-gray-300 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
 					>
 						<svg
-							className="w-5 h-5 mr-2"
+							className="mr-2 w-5 h-5"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
@@ -109,9 +109,9 @@ export default function CourseAssignments() {
 				</div>
 
 				{assignments.length === 0 ? (
-					<div className="text-center py-12 bg-white rounded-lg shadow">
+					<div className="py-12 text-center bg-white rounded-lg shadow">
 						<svg
-							className="mx-auto h-12 w-12 text-gray-400"
+							className="mx-auto w-12 h-12 text-gray-400"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
@@ -135,13 +135,13 @@ export default function CourseAssignments() {
 								href={`/classroom/${courseId}/${assignment.id}`}
 								className="block group"
 							>
-								<div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
-									<div className="flex items-center justify-between">
-										<h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+								<div className="p-6 bg-white rounded-lg shadow-md transition-shadow duration-200 hover:shadow-lg">
+									<div className="flex justify-between items-center">
+										<h3 className="text-lg font-semibold text-gray-900 transition-colors group-hover:text-blue-600">
 											{assignment.title}
 										</h3>
 										<svg
-											className="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors"
+											className="w-5 h-5 text-gray-400 transition-colors group-hover:text-blue-500"
 											fill="none"
 											stroke="currentColor"
 											viewBox="0 0 24 24"

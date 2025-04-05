@@ -205,9 +205,9 @@ export default function CourseWorkDetails() {
 
 	if (status === "loading" || isEvaluating)
 		return (
-			<div className="flex items-center justify-center min-h-screen">
+			<div className="flex justify-center items-center min-h-screen">
 				<div className="text-center">
-					<div className="w-12 h-12 mb-4 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
+					<div className="mb-4 w-12 h-12 rounded-full border-t-2 border-b-2 border-blue-500 animate-spin"></div>
 					<div className="text-xl text-gray-600">
 						{isEvaluating ? "Evaluating submissions..." : "Loading..."}
 					</div>
@@ -221,7 +221,7 @@ export default function CourseWorkDetails() {
 		);
 	if (status === "unauthenticated")
 		return (
-			<div className="flex items-center justify-center min-h-screen">
+			<div className="flex justify-center items-center min-h-screen">
 				<div className="p-8 text-center bg-white rounded-lg shadow-md">
 					<h2 className="mb-4 text-2xl font-semibold">Please Log In</h2>
 					<p className="mb-4 text-gray-600">
@@ -229,7 +229,7 @@ export default function CourseWorkDetails() {
 					</p>
 					<Link
 						href="/login"
-						className="inline-block px-6 py-2 text-white transition-colors bg-blue-500 rounded-md hover:bg-blue-600"
+						className="inline-block px-6 py-2 text-white bg-blue-500 rounded-md transition-colors hover:bg-blue-600"
 					>
 						Go to Login
 					</Link>
@@ -238,7 +238,7 @@ export default function CourseWorkDetails() {
 		);
 	if (session?.provider !== "google")
 		return (
-			<div className="flex items-center justify-center min-h-screen">
+			<div className="flex justify-center items-center min-h-screen">
 				<div className="p-8 text-center bg-white rounded-lg shadow-md">
 					<h2 className="mb-4 text-2xl font-semibold">Google Login Required</h2>
 					<p className="text-gray-600">
@@ -250,23 +250,23 @@ export default function CourseWorkDetails() {
 
 	if (!coursework)
 		return (
-			<div className="flex items-center justify-center min-h-screen">
-				<div className="w-12 h-12 border-t-2 border-b-2 border-blue-500 rounded-full animate-spin"></div>
+			<div className="flex justify-center items-center min-h-screen">
+				<div className="w-12 h-12 rounded-full border-t-2 border-b-2 border-blue-500 animate-spin"></div>
 			</div>
 		);
 
 	return (
-		<div className="min-h-screen px-4 py-8 bg-gray-50 sm:px-6 lg:px-8">
+		<div className="px-4 py-8 min-h-screen bg-teal-custom sm:px-6 lg:px-8">
 			<div className="mx-auto max-w-7xl">
 				{/* Add sign out button */}
 				{status === "authenticated" && (
 					<div className="flex justify-end mb-4">
 						<button
 							onClick={() => signOut({ callbackUrl: "/login" })}
-							className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+							className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md border border-transparent shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
 						>
 							<svg
-								className="w-5 h-5 mr-2 -ml-1"
+								className="mr-2 -ml-1 w-5 h-5"
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 20 20"
 								fill="currentColor"
@@ -281,14 +281,14 @@ export default function CourseWorkDetails() {
 						</button>
 					</div>
 				)}
-				<div className="flex items-center justify-between mb-8">
+				<div className="flex justify-between items-center mb-8">
 					<div>
 						<Link
 							href={`/classroom/${courseId}`}
 							className="inline-flex items-center mb-2 text-sm text-gray-500 hover:text-gray-700"
 						>
 							<svg
-								className="w-5 h-5 mr-1"
+								className="mr-1 w-5 h-5"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -307,7 +307,7 @@ export default function CourseWorkDetails() {
 						</h1>
 						<div className="flex items-center mt-2 text-gray-600">
 							<svg
-								className="w-5 h-5 mr-1"
+								className="mr-1 w-5 h-5"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -341,7 +341,7 @@ export default function CourseWorkDetails() {
 
 				{/* Student Submissions */}
 				<div className="p-6 bg-white rounded-lg shadow-md">
-					<div className="flex items-center justify-between mb-6">
+					<div className="flex justify-between items-center mb-6">
 						<h2 className="text-xl font-semibold text-gray-900">
 							Student Submissions
 						</h2>
@@ -362,7 +362,7 @@ export default function CourseWorkDetails() {
 								{evaluatingSubmissions.size > 0 ? (
 									<>
 										<svg
-											className="w-5 h-5 mr-2 -ml-1 text-white animate-spin"
+											className="mr-2 -ml-1 w-5 h-5 text-white animate-spin"
 											xmlns="http://www.w3.org/2000/svg"
 											fill="none"
 											viewBox="0 0 24 24"
@@ -391,7 +391,7 @@ export default function CourseWorkDetails() {
 					</div>
 
 					{evaluationErrors.general && (
-						<div className="p-4 mb-4 text-red-700 border border-red-200 rounded-md bg-red-50">
+						<div className="p-4 mb-4 text-red-700 bg-red-50 rounded-md border border-red-200">
 							{evaluationErrors.general}
 						</div>
 					)}
@@ -408,11 +408,11 @@ export default function CourseWorkDetails() {
 							return (
 								<div
 									key={submission.id}
-									className="p-6 transition-colors border border-gray-200 rounded-lg hover:border-gray-300"
+									className="p-6 rounded-lg border border-gray-200 transition-colors hover:border-gray-300"
 								>
 									<div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
 										<div className="flex-1 space-y-2">
-											<div className="flex items-center gap-2">
+											<div className="flex gap-2 items-center">
 												<span className="px-2 py-1 text-xs font-medium text-blue-800 bg-blue-100 rounded-full">
 													{submission.state}
 												</span>
@@ -464,10 +464,10 @@ export default function CourseWorkDetails() {
 												href={submission.alternateLink}
 												target="_blank"
 												rel="noopener noreferrer"
-												className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+												className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-md border border-gray-300 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
 											>
 												<svg
-													className="w-5 h-5 mr-2"
+													className="mr-2 w-5 h-5"
 													fill="none"
 													stroke="currentColor"
 													viewBox="0 0 24 24"
@@ -494,7 +494,7 @@ export default function CourseWorkDetails() {
 													{evaluatingSubmissions.has(submission.id) ? (
 														<>
 															<svg
-																className="w-5 h-5 mr-2 -ml-1 text-white animate-spin"
+																className="mr-2 -ml-1 w-5 h-5 text-white animate-spin"
 																xmlns="http://www.w3.org/2000/svg"
 																fill="none"
 																viewBox="0 0 24 24"
@@ -547,11 +547,11 @@ export default function CourseWorkDetails() {
 													{submission.attachments.map((attachment, index) => (
 														<div
 															key={index}
-															className="p-4 transition-colors rounded-lg bg-gray-50 hover:bg-gray-100"
+															className="p-4 bg-gray-50 rounded-lg transition-colors hover:bg-gray-100"
 														>
 															{attachment.driveFile && (
 																<div className="flex flex-col gap-2">
-																	<div className="flex items-center justify-between">
+																	<div className="flex justify-between items-center">
 																		<p className="font-medium text-gray-900">
 																			{attachment.driveFile.title}
 																		</p>
@@ -564,10 +564,10 @@ export default function CourseWorkDetails() {
 																			href={attachment.driveFile.alternateLink}
 																			target="_blank"
 																			rel="noopener noreferrer"
-																			className="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm text-center text-blue-700 transition-colors bg-blue-100 rounded-md hover:bg-blue-200"
+																			className="inline-flex flex-1 justify-center items-center px-3 py-2 text-sm text-center text-blue-700 bg-blue-100 rounded-md transition-colors hover:bg-blue-200"
 																		>
 																			<svg
-																				className="w-4 h-4 mr-2"
+																				className="mr-2 w-4 h-4"
 																				fill="none"
 																				stroke="currentColor"
 																				viewBox="0 0 24 24"
@@ -586,10 +586,10 @@ export default function CourseWorkDetails() {
 																				onClick={() =>
 																					handlePreview(attachment)
 																				}
-																				className="inline-flex items-center justify-center px-3 py-2 text-sm text-green-700 transition-colors bg-green-100 rounded-md hover:bg-green-200"
+																				className="inline-flex justify-center items-center px-3 py-2 text-sm text-green-700 bg-green-100 rounded-md transition-colors hover:bg-green-200"
 																			>
 																				<svg
-																					className="w-4 h-4 mr-2"
+																					className="mr-2 w-4 h-4"
 																					fill="none"
 																					stroke="currentColor"
 																					viewBox="0 0 24 24"
@@ -627,9 +627,9 @@ export default function CourseWorkDetails() {
 
 			{/* Preview Modal */}
 			{previewUrl && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+				<div className="flex fixed inset-0 z-50 justify-center items-center p-4 bg-black bg-opacity-50">
 					<div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
-						<div className="flex items-center justify-between p-4 border-b bg-gray-50">
+						<div className="flex justify-between items-center p-4 bg-gray-50 border-b">
 							<h3 className="text-lg font-medium text-gray-900">
 								{selectedSubmission?.driveFile?.title}
 							</h3>
@@ -638,7 +638,7 @@ export default function CourseWorkDetails() {
 									setPreviewUrl(null);
 									setSelectedSubmission(null);
 								}}
-								className="p-1 text-gray-500 transition-colors rounded-full hover:text-gray-700 hover:bg-gray-200"
+								className="p-1 text-gray-500 rounded-full transition-colors hover:text-gray-700 hover:bg-gray-200"
 							>
 								<svg
 									className="w-6 h-6"

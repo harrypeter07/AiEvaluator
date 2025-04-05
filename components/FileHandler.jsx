@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import ComparisonResult from "./ComparisonResult";
 import ResultPreview from "./ResultPreview";
+import { FileUpload } from "@/components/ui/file-upload";
 
 const FilePreviewBase = ({ file, previewUrl }) => {
 	if (!file) return null;
@@ -72,14 +73,7 @@ const FileHandlerBase = ({ mode, onResult, onLoadingChange }) => {
 		};
 	}, [previewUrls]);
 
-	const createPreviewUrl = (file) => {
-		const url = URL.createObjectURL(file);
-		setPreviewUrls((prev) => ({ ...prev, [file.name]: url }));
-		return url;
-	};
-
-	const handleFileChange = (e) => {
-		const selectedFiles = Array.from(e.target.files);
+	const handleFileUpload = (uploadedFiles, uploadType) => {
 		const validTypes = [
 			"application/pdf",
 			"image/jpeg",
@@ -90,7 +84,7 @@ const FileHandlerBase = ({ mode, onResult, onLoadingChange }) => {
 		];
 		const maxSize = 10 * 1024 * 1024; // 10MB
 
-		const validFiles = selectedFiles.filter((file) => {
+		const validFiles = uploadedFiles.filter((file) => {
 			if (!validTypes.includes(file.type)) {
 				setError(
 					`Invalid file type: ${file.name}. Please upload PDF, Word, or image files only.`
@@ -106,13 +100,10 @@ const FileHandlerBase = ({ mode, onResult, onLoadingChange }) => {
 
 		if (validFiles.length > 0) {
 			if (mode === "compare") {
-				const name = e.target.name;
-				if (name === "file1") {
+				if (uploadType === "file1") {
 					setCompareFile1(validFiles[0]);
-					createPreviewUrl(validFiles[0]);
-				} else if (name === "file2") {
+				} else if (uploadType === "file2") {
 					setCompareFile2(validFiles[0]);
-					createPreviewUrl(validFiles[0]);
 				}
 			} else {
 				setFiles(validFiles);
@@ -124,11 +115,6 @@ const FileHandlerBase = ({ mode, onResult, onLoadingChange }) => {
 				} else if (mode === "single" && validFiles.length > 0) {
 					setTitle(validFiles[0].name.replace(/\.[^/.]+$/, ""));
 				}
-
-				// Create preview URLs for valid files
-				validFiles.forEach((file) => {
-					createPreviewUrl(file);
-				});
 			}
 			setError("");
 		}
@@ -319,12 +305,7 @@ const FileHandlerBase = ({ mode, onResult, onLoadingChange }) => {
 						<label className="block text-sm font-medium text-gray-700">
 							Upload PDF
 						</label>
-						<input
-							type="file"
-							accept="application/pdf"
-							onChange={handleFileChange}
-							className="mt-1"
-						/>
+						<FileUpload onChange={(files) => handleFileUpload(files)} />
 						{files.length > 0 && (
 							<FilePreview
 								file={files[0]}
@@ -349,13 +330,7 @@ const FileHandlerBase = ({ mode, onResult, onLoadingChange }) => {
 
 			{mode === "batch" && (
 				<div className="mb-4">
-					<input
-						type="file"
-						accept="application/pdf"
-						multiple
-						onChange={handleFileChange}
-						className="mb-4"
-					/>
+					<FileUpload onChange={(files) => handleFileUpload(files)} />
 					<div className="space-y-4">
 						{files.map((file, index) => (
 							<div key={index}>
@@ -384,12 +359,8 @@ const FileHandlerBase = ({ mode, onResult, onLoadingChange }) => {
 						<label className="block text-sm font-medium text-gray-700">
 							First PDF
 						</label>
-						<input
-							type="file"
-							accept="application/pdf"
-							name="file1"
-							onChange={handleFileChange}
-							className="mt-1"
+						<FileUpload
+							onChange={(files) => handleFileUpload(files, "file1")}
 						/>
 						{compareFile1 && (
 							<FilePreview
@@ -402,12 +373,8 @@ const FileHandlerBase = ({ mode, onResult, onLoadingChange }) => {
 						<label className="block text-sm font-medium text-gray-700">
 							Second PDF
 						</label>
-						<input
-							type="file"
-							accept="application/pdf"
-							name="file2"
-							onChange={handleFileChange}
-							className="mt-1"
+						<FileUpload
+							onChange={(files) => handleFileUpload(files, "file2")}
 						/>
 						{compareFile2 && (
 							<FilePreview

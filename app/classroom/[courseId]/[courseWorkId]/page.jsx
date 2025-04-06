@@ -143,6 +143,7 @@ export default function CourseWorkDetails() {
 								courseId,
 								courseWorkId,
 								submissions: batch,
+								accessToken: session?.accessToken,
 							}),
 							signal: controller.signal,
 						}

@@ -1,9 +1,6 @@
 export const runtime = "edge";
 
 import { analyzeClassroomSubmission } from "@/lib/classroomGemini";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/authOptions";
-import { google } from "googleapis";
 
 export async function POST(req) {
 	const encoder = new TextEncoder();
@@ -16,39 +13,40 @@ export async function POST(req) {
 
 	(async () => {
 		try {
-			const session = await getServerSession(authOptions);
-			if (!session?.user?.email) {
-				await writeJSON({ error: "Session expired. Please sign in again." });
-				await writer.close();
-				return;
-			}
+			const { courseId, courseWorkId, submissions, accessToken } =
+				await req.json();
 
-			if (!session.accessToken) {
+			if (!accessToken) {
 				await writeJSON({ error: "Google access token not found" });
 				await writer.close();
 				return;
 			}
 
-			const { courseId, courseWorkId, submissions } = await req.json();
 			console.log("Starting evaluation for submissions:", submissions.length);
-
-			// Initialize Google Classroom API
-			const auth = new google.auth.OAuth2();
-			auth.setCredentials({ access_token: session.accessToken });
-			const classroom = google.classroom({ version: "v1", auth });
 
 			// Process each submission
 			for (const submission of submissions) {
 				try {
 					console.log(`Processing submission ${submission.id}`);
 
-					// Get the submission details with attachment
-					const { data: submissionData } =
-						await classroom.courses.courseWork.studentSubmissions.get({
-							courseId: courseId,
-							courseWorkId: courseWorkId,
-							id: submission.id,
-						});
+					// Get the submission details with attachment using fetch
+					const submissionResponse = await fetch(
+						`https://classroom.googleapis.com/v1/courses/${courseId}/courseWork/${courseWorkId}/studentSubmissions/${submission.id}`,
+						{
+							headers: {
+								Authorization: `Bearer ${accessToken}`,
+								Accept: "application/json",
+							},
+						}
+					);
+
+					if (!submissionResponse.ok) {
+						throw new Error(
+							`Failed to fetch submission: ${submissionResponse.statusText}`
+						);
+					}
+
+					const submissionData = await submissionResponse.json();
 
 					if (!submissionData.assignmentSubmission?.attachments?.length) {
 						await writeJSON({
@@ -80,7 +78,7 @@ export async function POST(req) {
 					// Analyze with Gemini
 					const analysis = await analyzeClassroomSubmission(
 						fileUrl,
-						session.accessToken
+						accessToken
 					);
 
 					// Extract numerical score from analysis

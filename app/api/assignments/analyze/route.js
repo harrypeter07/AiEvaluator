@@ -52,53 +52,39 @@ export async function POST(req) {
 			);
 		}
 
-		// Convert PDF to base64
-		const bytes = await pdf.arrayBuffer();
-		const base64Data = Buffer.from(bytes).toString("base64");
+		try {
+			// Convert PDF to base64
+			const bytes = await pdf.arrayBuffer();
+			const base64Data = Buffer.from(bytes).toString("base64");
 
-		// Get analysis from Gemini
-		const analysis = await analyzeAssignment(base64Data);
-		if (!analysis || !analysis.extractedText) {
-			throw new Error("Failed to analyze PDF");
-		}
+			// Get analysis from Gemini
+			const analysis = await analyzeAssignment(base64Data);
+			if (!analysis || !analysis.extractedText) {
+				throw new Error("Failed to analyze PDF: No analysis results returned");
+			}
 
-		// Create and save assignment
-		const assignment = new Assignment({
-			userId: user._id,
-			title,
-			content: analysis.extractedText,
-			originalFileName: pdf.name,
-			feedback: analysis.extractedText,
-		});
+			// Create and save assignment
+			const assignment = new Assignment({
+				userId: user._id,
+				title,
+				content: analysis.extractedText,
+				originalFileName: pdf.name,
+				feedback: analysis.extractedText,
+			});
 
-		await assignment.save();
+			await assignment.save();
 
-		return Response.json({
-			success: true,
-			feedback: analysis.extractedText,
-		});
-	} catch (error) {
-		console.error("Error processing assignment:", error);
-
-		// Handle specific error types
-		if (error.name === "CastError") {
+			// Return the feedback
+			return Response.json({ feedback: analysis.extractedText });
+		} catch (error) {
+			console.error("Error processing PDF:", error);
 			return Response.json(
-				{
-					error: "Invalid data format",
-					details:
-						process.env.NODE_ENV === "development" ? error.message : undefined,
-				},
-				{ status: 400 }
+				{ error: "Failed to analyze PDF: " + error.message },
+				{ status: 500 }
 			);
 		}
-
-		return Response.json(
-			{
-				error: error.message || "Internal server error",
-				details:
-					process.env.NODE_ENV === "development" ? error.stack : undefined,
-			},
-			{ status: 500 }
-		);
+	} catch (error) {
+		console.error("Server error:", error);
+		return Response.json({ error: "Internal server error" }, { status: 500 });
 	}
 }

@@ -1,4 +1,4 @@
-import { analyzeAssignment } from "@/lib/gemini";
+import { analyzeClassroomSubmission } from "@/lib/classroomGemini";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import { google } from "googleapis";
@@ -65,7 +65,10 @@ export async function POST(req) {
 
 								// Analyze with Gemini
 								console.log("Starting Gemini analysis");
-								const analysis = await analyzeAssignment(fileUrl);
+								const analysis = await analyzeClassroomSubmission(
+									fileUrl,
+									session.accessToken
+								);
 								console.log("Gemini analysis result:", analysis);
 
 								// Extract numerical score from analysis

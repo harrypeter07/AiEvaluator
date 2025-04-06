@@ -123,9 +123,15 @@ export default function CourseWorkDetails() {
 		try {
 			setEvaluatingSubmissions(new Set(submissionsToEvaluate.map((s) => s.id)));
 
-			// Process submissions one at a time with a delay
-			for (const submission of submissionsToEvaluate) {
+			// Process submissions in smaller batches
+			const batchSize = 3; // Process 3 submissions at a time
+			for (let i = 0; i < submissionsToEvaluate.length; i += batchSize) {
+				const batch = submissionsToEvaluate.slice(i, i + batchSize);
+
 				try {
+					const controller = new AbortController();
+					const timeoutId = setTimeout(() => controller.abort(), 50000); // 50-second timeout
+
 					const response = await fetch(
 						"/api/assignments/evaluateClassroomSubmissions",
 						{
@@ -136,13 +142,16 @@ export default function CourseWorkDetails() {
 							body: JSON.stringify({
 								courseId,
 								courseWorkId,
-								submissions: [submission],
+								submissions: batch,
 							}),
+							signal: controller.signal,
 						}
 					);
 
+					clearTimeout(timeoutId);
+
 					if (!response.ok) {
-						throw new Error("Failed to evaluate submission");
+						throw new Error(`HTTP error! status: ${response.status}`);
 					}
 
 					const reader = response.body.getReader();
@@ -153,53 +162,67 @@ export default function CourseWorkDetails() {
 						if (done) break;
 
 						const chunk = decoder.decode(value);
-						try {
-							const data = JSON.parse(chunk);
-							if (data.evaluation) {
-								// Save evaluation to MongoDB
-								await saveEvaluation(data.evaluation);
+						const lines = chunk.split("\n").filter((line) => line.trim());
 
-								// Update evaluationResults state immediately
-								setEvaluationResults((prev) => {
-									const filtered = prev.filter(
-										(e) => e.submissionId !== data.evaluation.submissionId
-									);
-									return [...filtered, data.evaluation];
-								});
+						for (const line of lines) {
+							try {
+								const data = JSON.parse(line);
+								if (data.evaluation) {
+									// Save evaluation to MongoDB
+									await saveEvaluation(data.evaluation);
 
-								// Update submissions state to reflect new evaluation
-								setSubmissions((prev) => {
-									return prev.map((s) => {
-										if (s.id === data.evaluation.submissionId) {
-											return {
-												...s,
-												evaluationFeedback: data.evaluation.feedback,
-												evaluationScore: data.evaluation.score,
-											};
-										}
-										return s;
+									// Update evaluationResults state
+									setEvaluationResults((prev) => {
+										const filtered = prev.filter(
+											(e) => e.submissionId !== data.evaluation.submissionId
+										);
+										return [...filtered, data.evaluation];
 									});
-								});
 
-								setEvaluatingSubmissions((prev) => {
-									const next = new Set(prev);
-									next.delete(data.evaluation.submissionId);
-									return next;
-								});
+									// Update submissions state
+									setSubmissions((prev) => {
+										return prev.map((s) => {
+											if (s.id === data.evaluation.submissionId) {
+												return {
+													...s,
+													evaluationFeedback: data.evaluation.feedback,
+													evaluationScore: data.evaluation.score,
+												};
+											}
+											return s;
+										});
+									});
+
+									setEvaluatingSubmissions((prev) => {
+										const next = new Set(prev);
+										next.delete(data.evaluation.submissionId);
+										return next;
+									});
+								}
+
+								if (data.error) {
+									console.error("Server error:", data.error);
+									setEvaluationErrors((prev) => ({
+										...prev,
+										[batch[0].id]: data.error,
+									}));
+								}
+							} catch (e) {
+								console.error("Error parsing chunk:", e);
 							}
-						} catch (e) {
-							console.error("Error parsing chunk:", e);
 						}
 					}
 
-					// Add a 10-second delay between submissions
-					await new Promise((resolve) => setTimeout(resolve, 10000));
+					// Add a delay between batches
+					await new Promise((resolve) => setTimeout(resolve, 5000));
 				} catch (error) {
-					console.error("Error processing submission:", error);
-					setEvaluationErrors((prev) => ({
-						...prev,
-						[submission.id]: error.message,
-					}));
+					console.error("Error processing batch:", error);
+					for (const submission of batch) {
+						setEvaluationErrors((prev) => ({
+							...prev,
+							[submission.id]: error.message,
+						}));
+					}
 				}
 			}
 		} catch (error) {

@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import { analyzeClassroomSubmission } from "@/lib/classroomGemini";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
@@ -47,68 +49,8 @@ export async function POST(req) {
 							courseWorkId: courseWorkId,
 							id: submission.id,
 						});
-					console.log("Submission data:", submissionData);
 
-					if (submissionData.assignmentSubmission?.attachments?.length > 0) {
-						// Get the PDF file from the attachment
-						const attachment =
-							submissionData.assignmentSubmission.attachments[0];
-						console.log("Processing attachment:", attachment);
-
-						if (attachment.driveFile) {
-							try {
-								console.log("Processing file:", attachment.driveFile.title);
-
-								// Get the file's web view link
-								const fileUrl = attachment.driveFile.alternateLink;
-								console.log("File URL:", fileUrl);
-
-								// Analyze with Gemini
-								console.log("Starting Gemini analysis");
-								const analysis = await analyzeClassroomSubmission(
-									fileUrl,
-									session.accessToken
-								);
-								console.log("Gemini analysis result:", analysis);
-
-								// Extract numerical score from analysis
-								const scoreMatch = analysis.extractedText.match(
-									/\*\*Score:\*\*\s*(\d+)\/100/
-								);
-								const score = scoreMatch ? parseInt(scoreMatch[1]) : null;
-								console.log("Extracted score:", score);
-
-								// Stream the evaluation result
-								await writeJSON({
-									evaluation: {
-										submissionId: submission.id,
-										studentId: submission.userId,
-										feedback: analysis.extractedText,
-										score: score,
-									},
-								});
-							} catch (error) {
-								console.error("Error processing file:", error);
-								await writeJSON({
-									evaluation: {
-										submissionId: submission.id,
-										studentId: submission.userId,
-										error: `Error processing file: ${error.message}`,
-									},
-								});
-							}
-						} else {
-							console.log("No drive file found in attachment");
-							await writeJSON({
-								evaluation: {
-									submissionId: submission.id,
-									studentId: submission.userId,
-									error: "No drive file found in attachment",
-								},
-							});
-						}
-					} else {
-						console.log("No attachments found for submission:", submission.id);
+					if (!submissionData.assignmentSubmission?.attachments?.length) {
 						await writeJSON({
 							evaluation: {
 								submissionId: submission.id,
@@ -116,33 +58,72 @@ export async function POST(req) {
 								error: "No attachments found",
 							},
 						});
+						continue;
 					}
-				} catch (submissionError) {
-					console.error(
-						`Error processing submission ${submission.id}:`,
-						submissionError
+
+					const attachment = submissionData.assignmentSubmission.attachments[0];
+					if (!attachment.driveFile) {
+						await writeJSON({
+							evaluation: {
+								submissionId: submission.id,
+								studentId: submission.userId,
+								error: "No drive file found in attachment",
+							},
+						});
+						continue;
+					}
+
+					// Get the file's web view link
+					const fileUrl = attachment.driveFile.alternateLink;
+					console.log("Processing file:", attachment.driveFile.title);
+
+					// Analyze with Gemini
+					const analysis = await analyzeClassroomSubmission(
+						fileUrl,
+						session.accessToken
 					);
+
+					// Extract numerical score from analysis
+					const scoreMatch = analysis.extractedText.match(
+						/\*\*Score:\*\*\s*(\d+)\/100/
+					);
+					const score = scoreMatch ? parseInt(scoreMatch[1]) : null;
+
 					await writeJSON({
 						evaluation: {
 							submissionId: submission.id,
 							studentId: submission.userId,
-							error: submissionError.message,
+							feedback: analysis.extractedText,
+							score: score,
+						},
+					});
+				} catch (error) {
+					console.error(`Error processing submission ${submission.id}:`, error);
+					await writeJSON({
+						evaluation: {
+							submissionId: submission.id,
+							studentId: submission.userId,
+							error: error.message || "Failed to evaluate submission",
 						},
 					});
 				}
+
+				// Add a delay between submissions to prevent rate limiting
+				await new Promise((resolve) => setTimeout(resolve, 1000));
 			}
 
 			await writer.close();
 		} catch (error) {
 			console.error("Error evaluating submissions:", error);
-			await writeJSON({ error: error.message });
+			await writeJSON({ error: error.message || "Unknown error occurred" });
 			await writer.close();
 		}
 	})();
 
 	return new Response(stream.readable, {
 		headers: {
-			"Content-Type": "text/event-stream",
+			"Content-Type": "application/x-ndjson",
+			"Transfer-Encoding": "chunked",
 			"Cache-Control": "no-cache",
 			Connection: "keep-alive",
 		},
